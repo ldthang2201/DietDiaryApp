@@ -4,12 +4,13 @@ import { TouchableHighlight } from "react-native-gesture-handler";
 import colors from "../assets/colors";
 
 const screenWidth = Dimensions.get('window').width;
-const primaryButtonWidth = screenWidth * 0.8;
+const primaryButtonWidth = screenWidth * 0.85;
 
+// props: title, onPress, type
 export default function PrimaryButton (props) {
     return (
         <TouchableHighlight
-            style={{ borderRadius: 15, margin: 10 }}
+            style={{ borderRadius: 15, margin: 10, width: primaryButtonWidth }}
             onPress={props.onPress}>
             <View style={{
                 alignItems: 'center',
