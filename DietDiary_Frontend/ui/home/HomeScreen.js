@@ -62,6 +62,36 @@ var ListLogEx = [
         timeEx: 2,
         exercises: 2,
     },
+    {
+        id: 5,
+        datetime: '2021-10-03',
+        date: 21,
+        month: 10,
+        year: 2021,
+        eats: 2,
+        timeEx: 2,
+        exercises: 2,
+    },
+    {
+        id: 5,
+        datetime: '2021-10-02',
+        date: 21,
+        month: 10,
+        year: 2021,
+        eats: 2,
+        timeEx: 2,
+        exercises: 2,
+    },
+    {
+        id: 6,
+        datetime: '2021-10-22',
+        date: 21,
+        month: 10,
+        year: 2021,
+        eats: 1,
+        timeEx: 2,
+        exercises: 1,
+    },
 ]
 
 export default class HomeScreen extends BaseComponent {
@@ -75,12 +105,13 @@ export default class HomeScreen extends BaseComponent {
 
         this.state = {
             isLoading: false,
-            selectedDate: 'Today',
+            selectedDateDisplayed: 'Today',
             lstLog: ListLogEx,
             isNoRecord: log === undefined,
             eats: log === undefined ? 0 : log.eats,
             exercises: log === undefined ? 0 : log.exercises,
-            displayType: log
+            displayType: log,
+            selectedDate: getDateWithString(),
         }
     }
 
@@ -132,27 +163,38 @@ export default class HomeScreen extends BaseComponent {
                                 return log.datetime === selectedDate
                             })
 
-                            let displayColorItem = 'white'
+                            let displayColorItem = 'white';
 
+                            if (this.state.selectedDate === date.date.dateString) {
+                                displayColorItem = '#DEE4CF';
+                            }
+                            // display color of text number
                             if (selectedLog != undefined) {
                                 if (selectedLog.timeEx > selectedLog.exercises) {
-                                    displayColorItem = colors.notgood
+                                    displayColorItem = colors.notgood;
                                 } else if (selectedLog.timeEx <= selectedLog.exercises) {
-                                    displayColorItem = colors.good
+                                    displayColorItem = colors.good;
                                 }
+                            }
+
+                            // display background of selected date
+                            let displayBackground = 'white';
+                            if (this.state.selectedDate === date.date.dateString) {
+                                displayBackground = colors.selected;
                             }
 
                             const activeDate = (
                                 <TouchableOpacity onPress={() => {
                                     this.setState({
                                         isNoRecord: selectedLog === undefined,
-                                        selectedDate: date.state === 'today' ? 'Today' : date.accessibilityLabel,
+                                        selectedDateDisplayed: date.state === 'today' ? 'Today' : date.accessibilityLabel,
                                         eats: selectedLog === undefined ? 0 : selectedLog.eats,
                                         exercises: selectedLog === undefined ? 0 : selectedLog.exercises,
+                                        selectedDate: date.date.dateString,
                                     })
                                 }}>
-                                    <View style={{ justifyContent: 'center', alignItems: 'center', width: calendarItemWidth, height: calendarItemHeight }}>
-                                        <Text style={{ color: 'black', fontSize: 14, fontWeight: '600' }}>{date.date.day}</Text>
+                                    <View style={{ justifyContent: 'center', alignItems: 'center', width: calendarItemWidth, height: calendarItemHeight, backgroundColor: displayBackground}}>
+                                        <Text style={{ color: date.state === 'today' ? 'blue' : 'black', fontSize: 14, fontWeight: '600' }}>{date.date.day}</Text>
                                         <View style={{ width: calendarItemWidth * 0.5, height: calendarItemHeight * 0.1, backgroundColor: displayColorItem, borderRadius: 10 }} />
                                     </View>
                                 </TouchableOpacity>
@@ -169,7 +211,7 @@ export default class HomeScreen extends BaseComponent {
                             return (displayDate)
                         }}
                     />
-                    <Text style={Styles.log_home_title}>{this.state.selectedDate}</Text>
+                    <Text style={Styles.log_home_title}>{this.state.selectedDateDisplayed}</Text>
                     {!this.state.isNoRecord &&
                         (<View style = {{marginBottom: 20}}>
                             <View style={Styles.container_full_width_center_top}>
@@ -209,19 +251,6 @@ export default class HomeScreen extends BaseComponent {
             </ScrollView>
         )
     }
-
-    // RenderDate(props) {
-    //     const date = props.date;
-    //     return (
-    //         <TouchableOpacity onPress={this.onDatePress(date)}>
-    //             <View style={{ justifyContent: 'center', alignItems: 'center', width: calendarItemWidth, height: calendarItemHeight }}>
-    //                 <View style={{ borderColor: date.state === 'disabled' ? 'white' : 'red', borderWidth: 3, borderRadius: calendarCircle, width: calendarCircle, height: calendarCircle, justifyContent: 'center', alignItems: 'center' }}>
-    //                     <Text style={{ color: date.state === 'disabled' ? 'gray' : 'black' }}>{date.date.day}</Text>
-    //                 </View>
-    //             </View>
-    //         </TouchableOpacity>
-    //     )
-    // }
 }
 
 

@@ -9,3 +9,9 @@ export const getDateWithString = () => {
 export const getDate = (date) => {
     return new Date(date);
 }
+
+export const calculateDaysFromNow = (date) => {
+    const today = moment(new Date()).startOf('day');
+    const calDate = moment(date, yyyy_MM_DD);
+    return today.diff(calDate, 'days');
+}

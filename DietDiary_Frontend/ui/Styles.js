@@ -172,6 +172,13 @@ export default StyleSheet.create({
     tintColor: 'black',
   },
 
+  image_button: {
+    width: 35,
+    height: 35,
+    tintColor: 'black',
+    margin: 10
+  },
+
   log_home_text_times: {
     fontSize: 18,
     color: 'black',
@@ -187,5 +194,75 @@ export default StyleSheet.create({
     fontSize: 22,
     margin: 16,
     color: 'black',
-  }
+  },
+
+  log_title: {
+    fontSize: 22,
+    margin: 16,
+    color: 'black',
+    fontWeight: 'bold'
+  },
+
+  log_title_container: {
+    width: screenWidth,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+
+  header: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray'
+  },
+
+  arrow: {
+    width: 20,
+    height: 20,
+    margin: 10
+  },
+
+  history_weight_item_container: {
+    width: screenWidth * 0.9,
+    height: 55,
+    backgroundColor:  'white',
+    borderBottomWidth: 1,
+    borderColor: 'gray',
+    paddingStart: 20,
+    paddingEnd: 20,
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+
+  history_weight_item_date: {
+    margin: 5,
+
+  },
+
+  history_weight_item_value: {
+    marginStart: 10,
+    fontSize: 18,
+    fontWeight: 'bold'
+  },
+
+  history_weight_item_icon: {
+    width: 25,
+    height: 25
+  },
+
+  delete_container: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    right: 10,
+    bottom: 10,
+    paddingStart: 5,
+    paddingEnd: 5,
+    paddingBottom: 10,
+    paddingTop: 10,
+    borderWidth: 1,
+    borderRadius: 20,
+    borderColor: 'red'
+  },
+
 })

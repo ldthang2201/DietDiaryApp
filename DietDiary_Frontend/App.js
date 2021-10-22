@@ -65,7 +65,8 @@ const Home = () => {
         tabBarActiveTintColor: colors.primaryColor,
         tabBarInactiveTintColor: colors.secondaryColor,
         tabBarStyle: Styles.bottom_tab,
-        tabBarShowLabel: false
+        tabBarShowLabel: false,
+        headerStyle: Styles.header,
       }}>
       <Tab.Screen name={screenUtils.HomeScreen} component={HomeScreen}
         options={{
