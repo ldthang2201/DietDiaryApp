@@ -9,18 +9,15 @@ export const Log = {
         date: "string",
         time: "string",
         type: "string",
-        update_at:  {type: "date", default: new Date()},
+        update_at: { type: "date", default: new Date() },
         upload_at: "date?",
-        delete_flag:  { type: "bool", default: false},
+        delete_flag: { type: "bool", default: false },
     },
     primaryKey: "_id",
 }
 
 export const createNewLog = newLog => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
-        // const allLog = realm.objects(allSchemas.LOG);
-        // const existLog = allLog.filter(`date = ${newLog.date}`);
-        // console.log(existLog);
         realm.write(() => {
             realm.create(allSchemas.LOG, newLog);
             resolve(newLog);
@@ -32,5 +29,34 @@ export const getAllLog = () => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
         const allLogs = realm.objects(allSchemas.LOG);
         resolve(allLogs);
+    }).catch((error) => reject(error));
+})
+
+export const updateLogTime = (id, newTime) => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        realm.write(() => {
+            let existLog = realm.objectForPrimaryKey(allSchemas.LOG, id);
+            existLog.time = newTime;
+            resolve();
+        })
+    }).catch((error) => reject(error));
+})
+
+export const deleteLog = lstSelectedLog => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        realm.write(() => {
+            lstSelectedLog.forEach(element => {
+                realm.delete(realm.objectForPrimaryKey(allSchemas.LOG, element._id))
+            });
+            resolve();
+        })
+    }).catch((error) => reject(error));
+})
+
+export const getListLogsByDate = date => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        const listAllLogs = realm.objects(allSchemas.LOG);
+        const listLog = listAllLogs.filter(log => log.date == date);
+        resolve(listLog);
     }).catch((error) => reject(error));
 })

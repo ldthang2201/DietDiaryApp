@@ -20,16 +20,10 @@ export const Information = {
 
 export const createInformation = newInformation => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
-        let info = realm.objects(allSchemas.INFORMATION);
-        if (info.length === 0) {
-            realm.write(() => {
-                realm.create(allSchemas.INFORMATION, newInformation);
-                resolve(newInformation);
-            })
-        } else {
-            let currenInfo = info[0];
-            currenInfo.fullname = newInformation.fullname;
-        }
+        realm.write(() => {
+            realm.create(allSchemas.INFORMATION, newInformation);
+            resolve(newInformation);
+        })
     }).catch((error) => reject(error));
 });
 
