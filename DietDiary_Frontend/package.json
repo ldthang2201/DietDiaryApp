@@ -1,27 +1,45 @@
 {
-  "main": "index.js",
+  "name": "DietDiary",
+  "version": "0.0.1",
+  "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "web": "expo start --web",
-    "start": "react-native start"
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "expo": "~42.0.1",
-    "expo-splash-screen": "~0.11.2",
-    "expo-status-bar": "~1.0.4",
-    "expo-updates": "~0.8.1",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "react-native": "~0.63.4",
-    "react-native-gesture-handler": "~1.10.2",
-    "react-native-reanimated": "~2.2.0",
-    "react-native-screens": "~3.4.0",
-    "react-native-unimodules": "0.14.10",
-    "react-native-web": "~0.13.12"
+    "@react-native-async-storage/async-storage": "^1.15.9",
+    "@react-native-community/datetimepicker": "^3.5.2",
+    "@react-navigation/bottom-tabs": "^6.0.9",
+    "@react-navigation/native": "^6.0.6",
+    "@react-navigation/native-stack": "^6.2.5",
+    "moment": "^2.29.1",
+    "react": "17.0.2",
+    "react-native": "0.66.1",
+    "react-native-bouncy-checkbox": "^2.1.7",
+    "react-native-calendars": "^1.1268.0",
+    "react-native-chart-kit": "^6.11.0",
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-reanimated": "^2.2.3",
+    "react-native-safe-area-context": "^3.3.2",
+    "react-native-screens": "^3.8.0",
+    "react-native-svg": "^12.1.1",
+    "react-native-unimodules": "^0.14.8",
+    "realm": "^10.9.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0"
+    "@babel/core": "^7.15.8",
+    "@babel/runtime": "^7.15.4",
+    "@react-native-community/eslint-config": "^3.0.1",
+    "babel-jest": "^27.3.1",
+    "eslint": "^8.0.1",
+    "jest": "^27.3.1",
+    "metro-react-native-babel-preset": "^0.66.2",
+    "react-test-renderer": "17.0.2"
   },
-  "private": true
+  "jest": {
+    "preset": "react-native"
+  }
 }
