@@ -1,5 +1,5 @@
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { Account } from './account';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -16,9 +16,26 @@ export class AccountsService {
             email: email,
             password: password,
         });
+        const existAccount = await this.accountModel.findOne({username: username});
+        if (existAccount != null) {
+            throw new HttpException('Account Existed', HttpStatus.CONFLICT);
+        }
+
         const result = await newAccount.save();
-        console.log(result);
-        return result.id as string;
+        return result;
+    }
+
+    async login(username: string, password) {
+        const existAccount = await this.accountModel.findOne({username: username} || {email: username});
+        if (existAccount == null) {
+            throw new HttpException('Username or password is incorrect', HttpStatus.BAD_REQUEST);
+        }
+
+        if (existAccount.password != password) {
+            throw new HttpException('Username or password is incorrect', HttpStatus.BAD_REQUEST);
+        }
+
+        return existAccount;
     }
 
     getAccounts() {
