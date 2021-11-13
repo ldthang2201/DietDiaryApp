@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 
 @Controller('account')
@@ -12,8 +12,16 @@ export class AccountsController {
         @Body('email') email: string,
         @Body('password') password: string,
     ) {
+        if (username === undefined || email === undefined || password === undefined) {
+            throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+        }
         const newAccount = await this.accountService.createAccount(username, email, password);
-        return { accounts: newAccount };
+        return { 
+            result: 'OK', 
+            message: 'Create account successfully', 
+            accounts: newAccount, 
+            statusCode: 201
+        };
     }
 
     @Get('/login')
@@ -22,30 +30,38 @@ export class AccountsController {
         @Body('username') username: string,
         @Body('password') password: string
     ) {
+        if (username === undefined || password === undefined) {
+            throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+        }
         const getAccount = await this.accountService.login(username, password);
-        return {accounts: getAccount}
+        return{ 
+            result: 'OK', 
+            message: 'Create account successfully', 
+            accounts: getAccount, 
+            statusCode: 200
+        }
     }
 
-    @Get()
-    getAllAccounts() {
-        return { accounts: this.accountService.getAccounts() };
-    }
+    // @Get()
+    // getAllAccounts() {
+    //     return { accounts: this.accountService.getAccounts() };
+    // }
 
-    @Get(':username')
-    getAccount(
-        @Param('username') username: string
-    ) {
-        console.log(username)
-        return this.accountService.getAccount(username);
-    }
+    // @Get(':username')
+    // getAccount(
+    //     @Param('username') username: string
+    // ) {
+    //     console.log(username)
+    //     return this.accountService.getAccount(username);
+    // }
 
-    @Patch()
-    updatePassword(
-        @Body('username') username: string,
-        @Body('email') email: string,
-        @Body('password') password: string
-    ) {
-        return this.accountService.updatePassword(username, email, password);
-    }
+    // @Patch()
+    // updatePassword(
+    //     @Body('username') username: string,
+    //     @Body('email') email: string,
+    //     @Body('password') password: string
+    // ) {
+    //     return this.accountService.updatePassword(username, email, password);
+    // }
 
 }
