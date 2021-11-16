@@ -8,23 +8,25 @@ export const AccountSchema = new mongoose.Schema({
     fullname: { type: String},
     dob: { type: Date},
     sex: { type: Boolean},
-    weights: raw({
-        createAt: Date,
-        weight: Number,
-    }),
-    heights:raw({
-        createAt: Date,
-        weight: Number,
-    })
+    height: { type: Number},
+    isVerify: { type: Boolean, default: false},
+    createAt: { type: Date, default: new Date()},
+    updateAt: { type: Date, default: new Date()},
+    uploadAt: { type: Date, default: new Date()},
+    isDelete: { type: Boolean, default: false}
 });
 
 export interface Account {
     username: string;
     email: string;
     password: string;
-    fullbane: string;
+    fullname: string;
     dob: Date;
     sex: boolean;
-    weights: Record<string, number>,
-    heights: Record<string, number>,
+    height: number;
+    isVerify: boolean;
+    createAt: Date;
+    updateAt: Date;
+    uploadAt: Date;
+    isDelete: boolean;
 }
