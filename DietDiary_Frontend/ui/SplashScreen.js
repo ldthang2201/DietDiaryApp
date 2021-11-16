@@ -25,7 +25,8 @@ export default class SplashScreen extends BaseComponent {
         //     navigation.replace(screenUtils.GetStartedScreen)
         // }
 
-        navigation.replace('Home')
+        // navigation.replace('Home')
+        navigation.replace(screenUtils.ReminderScreen);
     }
 
     componentDidMount() {
