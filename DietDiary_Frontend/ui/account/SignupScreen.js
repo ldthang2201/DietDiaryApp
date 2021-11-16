@@ -4,6 +4,8 @@ import BaseComponent from "../../components/BaseComponent";
 import PrimaryInput from "../../components/PrimaryInput";
 import PrimaryButton from "../../components/PrimaryButton"
 import Styles from "../Styles";
+import { validateEmail } from "../../utils/Utls";
+import { CreateAccount, TestApi } from "../../services/NetworkService";
 
 export default class SigninScreen extends BaseComponent {
     constructor(props) {
@@ -22,10 +24,46 @@ export default class SigninScreen extends BaseComponent {
         const email = this.state.email
         const password = this.state.password
         const confirmPassword = this.state.confirmPassword
-        console.log(username)
-        console.log(email)
-        console.log(password)
-        console.log(confirmPassword)
+
+        if (password != confirmPassword) {
+            Alert.alert('Inform', "Password is not match", [
+                {
+                    text: 'OK',
+                    style: 'cancel'
+                }
+            ], {cancelable: true})
+        } else if (!validateEmail(email)) {
+            Alert.alert('Inform', "Your email is invalid", [
+                {
+                    text: 'OK',
+                    style: 'cancel'
+                }
+            ], {cancelable: true})
+        } else {
+            console.log("Start loading");
+            CreateAccount(username, email, password).then((result) => {
+                if (result.result == "OK") {
+                    Alert.alert('Inform', result.message, [
+                        {
+                            text: 'OK',
+                            style: 'cancel'
+                        }
+                    ], {cancelable: true})
+                } else if (result.result == "Fail") {
+                    Alert.alert('Inform', result.message, [
+                        {
+                            text: 'OK',
+                            style: 'cancel'
+                        }
+                    ], {cancelable: true})
+                }
+                console.log("Stop loading");
+            }).catch((error) => {
+                console.log("Stop loading");
+            });
+        }
+
+
     }
 
     render() {
