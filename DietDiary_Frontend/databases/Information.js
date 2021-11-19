@@ -3,27 +3,53 @@ import allSchemas from "./allSchemas"
 import { databaseOptions } from "./database";
 
 export const Information = {
-    name:  allSchemas.INFORMATION,
+    name: allSchemas.INFORMATION,
     properties: {
         _id: "int",
-        fullname: "string",
-        dob: "string",
+        username: "string?",
+        email: "string?",
+        fullname: "string?",
+        dob: "string?",
         height: "float?",
-        weight: "float?",
-        update_at:  {type: "date", default: new Date()},
+        isVerify: { type: "bool", default: false },
+        update_at: { type: "date", default: new Date() },
         upload_at: "date?",
-        delete_flag:  { type: "bool", default: false},
+        delete_flag: { type: "bool", default: false },
     },
     primaryKey: "_id",
-    
+
 };
 
-export const createInformation = newInformation => new Promise((resolve, reject) => {
+export const createAccount = newAccount => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
+        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.delete_flag == false)
         realm.write(() => {
-            realm.create(allSchemas.INFORMATION, newInformation);
-            resolve(newInformation);
+            if (currentInfo.length > 0) {
+                let getOne = currentInfo[0];
+                getOne.username = newAccount.username;
+                getOne.email = newAccount.email;
+            } else {
+                realm.create(allSchemas.INFORMATION, newAccount);
+            }
         })
+        resolve();
+    }).catch(error => reject(error));
+})
+
+export const registerInformation = newInfo => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.delete_flag == false)
+        realm.write(() => {
+            if (currentInfo.length > 0) {
+                let getOne = currentInfo[0];
+                getOne.fullname = newInfo.fullname;
+                getOne.dob = newInfo.dob;
+                getOne.height = newInfo.height;
+            } else {
+                realm.create(allSchemas.INFORMATION, newAccount);
+            }
+        })
+        resolve();
     }).catch((error) => reject(error));
 });
 

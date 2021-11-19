@@ -26,11 +26,11 @@ export class AccountsService {
         const existEmail = await this.accountModel.findOne({email: email});
 
         if (existAccount != null) {
-            throw new HttpException({result: 'fail', message: 'Account Existed', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
+            throw new HttpException({result: 'Fail', message: 'Account Existed', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
         }
 
         if (existEmail != null) {
-            throw new HttpException({result: 'fail', message: 'Email had been registered', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
+            throw new HttpException({result: 'Fail', message: 'Email had been registered', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
         }
 
         const result = await newAccount.save();
@@ -44,11 +44,11 @@ export class AccountsService {
 
         const existAccount = await this.accountModel.findOne({username: username} || {email: username});
         if (existAccount == null) {
-            throw new HttpException({result: 'fail', message: 'Username or password is incorrect', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+            throw new HttpException({result: 'Fail', message: 'Username or password is incorrect', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
         }
 
         if (!comparePassword(password, existAccount.password)) {
-            throw new HttpException({result: 'fail', message: 'Password is not match', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+            throw new HttpException({result: 'Fail', message: 'Password is not match', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
         }
 
         return existAccount;

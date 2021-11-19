@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { Image, View } from "react-native";
 import BaseComponent from "../components/BaseComponent";
 import Styles from "./Styles";
-import StoreKeys from "../utils/StoredKeys"
+import StoreKeys, { getBoolean } from "../utils/StoredKeys"
 
 const screenUtils = require('../utils/ScreenNames')
 
@@ -23,10 +23,13 @@ export default class SplashScreen extends BaseComponent {
         //     }
         // } catch (error) {
         //     navigation.replace(screenUtils.GetStartedScreen)
-        // }
+        // // }
+        // if (!getBoolean(StoreKeys.key_get_started)) {
+        //     navigation.replace(screenUtils.GetStartedScreen)
+        // } else if (!getBoolean(StoreKeys.key_get_started))
 
         // navigation.replace('Home')
-        navigation.replace(screenUtils.ReminderScreen);
+        navigation.replace(screenUtils.GetStartedScreen);
     }
 
     componentDidMount() {

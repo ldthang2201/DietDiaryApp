@@ -1,12 +1,11 @@
 import React, { Component } from "react";
-import { Dimensions, Image, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { Alert, Dimensions, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import BaseComponent from "../../components/BaseComponent";
 import PrimaryInput from "../../components/PrimaryInput";
 import Styles from "../Styles";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import PrimaryButton from "../../components/PrimaryButton";
-import { CommonActions } from '@react-navigation/native';
-import { createInformation } from "../../databases/Information"
+import { registerInformation } from "../../databases/Information";
 
 const screenUtils = require('../../utils/ScreenNames')
 const screenWidth = Dimensions.get('window').width;
@@ -19,6 +18,8 @@ export default class RegisterInfoScreen extends BaseComponent {
             dob: '',
             show: false,
             fullname: '',
+            height: '',
+            weight: '',
         }
     }
 
@@ -38,19 +39,31 @@ export default class RegisterInfoScreen extends BaseComponent {
     }
 
     register = () => {
-        // const newInfo = {
-        //     _id: Math.floor(Date.now()),
-        //     fullname: this.state.fullname,
-        //     dob: this.state.dob,
-        //     height: 160,
-        //     weights: 80,
+        const fullname = this.state.fullname;
+        const dob = this.state.dob;
+        const height = this.state.height;
+        const weight = this.state.weight;
 
-        // }
-        // new createInformation(newInfo).then().catch((error) => console.log(error))
+        if (fullname.length == 0 || dob.length == 0 || height.length == 0) {
+            Alert.alert('Inform', "Please valid all field", [
+                {
+                    text: 'OK',
+                    style: 'cancel'
+                }
+            ], { cancelable: true });
+            return
+        }
+
+        const newInfo = {
+            fullname,
+            dob,
+            height,
+        }
+
+        registerInformation(newInfo).then().catch(error => console.log(error));
 
         //Navigate to Home
         const { navigation } = this.props;
-
         // remove all previous creens
         navigation.reset({
             index: 0,
