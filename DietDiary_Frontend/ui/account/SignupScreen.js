@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Alert, Keyboard, ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import BaseComponent from "../../components/BaseComponent";
 import PrimaryInput from "../../components/PrimaryInput";
 import PrimaryButton from "../../components/PrimaryButton"
@@ -14,9 +14,6 @@ export default class SigninScreen extends BaseComponent {
     constructor(props) {
         super(props);
 
-        this.needStopLoading = false;
-        this.isStartLoadding = false;
-
         this.state = {
             username: "",
             email: "",
@@ -24,21 +21,28 @@ export default class SigninScreen extends BaseComponent {
             confirmPassword: "",
             isLoading: false,
         }
+
+        this.params = props.route.params;
+        this.isFromSettings = false;
+        if (this.params != undefined && this.params.isFromSettings != undefined) {
+            this.isFromSettings = this.params.isFromSettings;
+        }
     }
 
     _onCreateAccountLocal = (newAccount) => {
         createAccount(newAccount).then().catch((error) => console.log(error));
         // navigate next screen
         const {navigation} = this.props;
-        if (this.props.isFromSettings != undefined && this.props.isFromSettings == true) {
-
+        if (this.isFromSettings) {
+            this.backToPreviousScreen(navigation);
+            this.backToPreviousScreen(navigation);
         } else {
             navigation.replace(screenUtils.RegisterInfoScreen);
         }
     }
 
     onRegister = () => {
-        Keyboard.dismiss();
+        this.dismissKeyboard();
         const username = this.state.username
         const email = this.state.email
         const password = this.state.password
@@ -61,8 +65,6 @@ export default class SigninScreen extends BaseComponent {
         } else {
             console.log("Start loading");
             this.setState({isLoading: true});
-            this.needStopLoading = false;
-            this.isStartLoadding = true;
             setTimeout(() => {
                 CreateAccount(username, email, password).then((result) => {
                     if (result.result == "OK") {
@@ -71,7 +73,7 @@ export default class SigninScreen extends BaseComponent {
                                 text: 'OK',
                                 onPress: () => {
                                     let newAccount = {
-                                        _id: new Date().getTime(),
+                                        _id: result.accounts._id,
                                         username: username,
                                         email: email,
                                     };

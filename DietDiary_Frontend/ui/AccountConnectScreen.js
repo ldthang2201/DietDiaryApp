@@ -17,39 +17,48 @@ export default class AccountConnectScreen extends BaseComponent {
         super(props);
 
         this.navigation = this.props.navigation;
+
+        this.params = props.route.params;
+        this.isFromSettings = false;
+        if (this.params != undefined && this.params.isFromSettings != undefined) {
+            this.isFromSettings = this.params.isFromSettings;
+        }
     }
 
     onSkip = () => {
         this.navigation.navigate(screenUtils.RegisterInfoScreen)
-        
+
         StoredKeysUtls.setBoolean(StoredKeysUtls.key_account_connect, true);
     }
 
     onOpenLogin = () => {
-        this.navigation.navigate(screenUtils.LoginScreen);
+        this.navigation.navigate(screenUtils.LoginScreen, {isFromSettings: this.isFromSettings});
     }
 
     onOpenCreateAccount = () => {
-        this.navigation.navigate(screenUtils.SigninScreen);
+        this.navigation.navigate(screenUtils.SigninScreen, {isFromSettings: this.isFromSettings});
     }
 
     render() {
         return (
             <View style={Styles.container_base} >
-                <View style = {{width: '80%', alignItems: 'center'}}>
+                <View style={{ width: '80%', alignItems: 'center' }}>
                     <Image source={require('../assets/images/ImgConnect.png')}
-                         resizeMode='contain' style = {{width: "80%"}} />
+                        resizeMode='contain' style={{ width: "80%" }} />
                     <View style={{ width: primaryButtonWidth, marginBottom: 30 }}>
                         <Text style={Styles.text_description_center}>Backup your data regularly, register an account to connect with us</Text>
                     </View>
                 </View>
-                <View style = {{marginBottom: 30}}>
+                <View style={{ marginBottom: 30 }}>
                     <PrimaryButton title='Log in' onPress={() => this.onOpenLogin()} type='primary' />
-                    <PrimaryButton title='Create your account' onPress={() => this.onOpenCreateAccount()}/>
-                    <Text style = {Styles.primary_button_text}
-                        onPress = {() => {
-                            this.onSkip();
-                        }}>Skip</Text>
+                    <PrimaryButton title='Create your account' onPress={() => this.onOpenCreateAccount()} />
+                    {
+                        !this.isFromSettings &&
+                        <Text style={Styles.primary_button_text}
+                            onPress={() => {
+                                this.onSkip();
+                            }}>Skip</Text>
+                    }
                 </View>
             </View>
         )

@@ -24,7 +24,7 @@ export class AccountsController {
         };
     }
 
-    @Get('/login')
+    @Post('/login')
     @HttpCode(200)
     async login(
         @Body('username') username: string,
@@ -36,7 +36,7 @@ export class AccountsController {
         const getAccount = await this.accountService.login(username, password);
         return{ 
             result: 'OK', 
-            message: 'Create account successfully', 
+            message: 'Login successfully', 
             accounts: getAccount, 
             statusCode: 200
         }
@@ -51,8 +51,8 @@ export class AccountsController {
     // getAccount(
     //     @Param('username') username: string
     // ) {
-    //     console.log(username)
-    //     return this.accountService.getAccount(username);
+    //     console.log("sss" + username);
+    //     console.log('that is param')
     // }
 
     // @Patch()

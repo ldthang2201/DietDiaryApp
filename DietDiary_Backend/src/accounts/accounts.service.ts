@@ -40,8 +40,6 @@ export class AccountsService {
     async login(username: string, password: string) {
         const hashPassword = await encodePassword(password);
 
-        console.log(hashPassword);
-
         const existAccount = await this.accountModel.findOne({username: username} || {email: username});
         if (existAccount == null) {
             throw new HttpException({result: 'Fail', message: 'Username or password is incorrect', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);

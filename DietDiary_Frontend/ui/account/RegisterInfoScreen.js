@@ -22,6 +22,12 @@ export default class RegisterInfoScreen extends BaseComponent {
             height: '',
             weight: '',
         }
+
+        this.params = props.route.params;
+        this.isFromSettings = false;
+        if (this.params != undefined && this.params.isFromSettings != undefined) {
+            this.isFromSettings = this.params.isFromSettings;
+        }
     }
 
     _onChangeDate = (event, selectedDate) => {
@@ -44,11 +50,6 @@ export default class RegisterInfoScreen extends BaseComponent {
         const dob = this.state.dob.trim();
         const height = this.state.height.trim();
         const weight = this.state.weight.trim();
-
-        console.log(fullname);
-        console.log(dob);
-        console.log(height);
-        console.log(weight);
 
         if (fullname.length == 0 || dob.length == 0 || height.length == 0) {
             Alert.alert('Inform', "Please valid all field", [
@@ -79,11 +80,17 @@ export default class RegisterInfoScreen extends BaseComponent {
         registerInformation(newInfo).then(result => {
             //Navigate to Home
             const { navigation } = this.props;
-            // remove all previous creens
-            navigation.reset({
-                index: 0,
-                routes: [{ name: 'Home' }],
-            });
+
+            if (this.isFromSettings) {
+                // back to settings screen
+                this.backToPreviousScreen(navigation);
+            } else {
+                // remove all previous creens
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Home' }],
+                });
+            }
 
             // set flag
             StoredKeysUtls.setBoolean(StoredKeysUtls.key_register_information, true);
@@ -98,6 +105,23 @@ export default class RegisterInfoScreen extends BaseComponent {
         });
     }
 
+    updateState = async () => {
+        const user = await this.getCurrentUser();
+        if (user != null) {
+            this.setState({
+                fullname: user.fullname,
+                dob: user.dob,
+                height: String(user.height),
+            })
+        }
+    }
+
+    componentDidMount() {
+        if (this.isFromSettings) {
+            this.updateState()
+        }
+    }
+
     render() {
         return (
             <View style={Styles.container_top_base}>
@@ -106,7 +130,7 @@ export default class RegisterInfoScreen extends BaseComponent {
                         <Image source={require('../../assets/images/ImgInfo.png')}
                             style={{ width: 150, height: 150, alignItems: 'center' }}
                             resizeMode='contain' />
-                        <PrimaryInput placeholder='Enter your full name' label='Full name' required={true} onChangeText={(text) => {
+                        <PrimaryInput placeholder='Enter your full name' label='Full name' required={true} value={this.state.fullname} onChangeText={(text) => {
                             this.setState({
                                 fullname: text
                             })
@@ -136,19 +160,19 @@ export default class RegisterInfoScreen extends BaseComponent {
                         <View style={{ flexDirection: "row", justifyContent: 'space-between', width: primaryButtonWidth }}>
                             <View style={{ flexDirection: 'column' }}>
                                 <Text style={Styles.input_label}>Weight (kg)</Text>
-                                <TextInput style={Styles.weight_input} keyboardType='numeric'
-                                    onChangeText = {(text) => this.setState({weight: text})}></TextInput>
+                                <TextInput style={Styles.weight_input} keyboardType='numeric' value={String(this.state.weight)}
+                                    onChangeText={(text) => this.setState({ weight: text })}></TextInput>
                             </View>
                             <View style={{ flexDirection: 'column' }}>
                                 <Text style={Styles.input_label}>Height (cm)</Text>
-                                <TextInput style={Styles.weight_input} keyboardType='numeric'
-                                onChangeText = {(text) => this.setState({height: text})}></TextInput>
+                                <TextInput style={Styles.weight_input} keyboardType='numeric' value={String(this.state.height)}
+                                    onChangeText={(text) => this.setState({ height: text })}></TextInput>
                             </View>
                         </View>
                     </View>
                 </ScrollView>
                 <View style={{ position: 'absolute', bottom: 10 }}>
-                    <PrimaryButton type='primary' title='Register' onPress={this.register} />
+                    <PrimaryButton type='primary' title={this.isFromSettings ? "Save" : "Register"} onPress={this.register} />
                 </View>
                 {this.state.show && (
                     <DateTimePicker

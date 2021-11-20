@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View } from "react-native";
+import { EventSubscriptionVendor, Text, View } from "react-native";
 import BaseComponent from "../../components/BaseComponent";
 import Styles from "../Styles";
 import PrimaryButton from "../../components/PrimaryButton"
@@ -23,6 +23,14 @@ const alarmNotifData = {
 };
 
 export default class ReminderScreen extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.params = props.route.params;
+
+        this.isFromSettings = this.params.isFromSettings;
+    }
 
     pushNotification = async () => {
         PushNotification.cancelAllLocalNotifications();

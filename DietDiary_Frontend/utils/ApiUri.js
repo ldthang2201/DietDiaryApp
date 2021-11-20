@@ -1,4 +1,4 @@
-const DOMAIN = "http://192.168.1.11";
+const DOMAIN = "http://192.168.1.7";
 const PORT= 3000;
 const REQUEST_URL = `${DOMAIN}:${PORT}`
 
