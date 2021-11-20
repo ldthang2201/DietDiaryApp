@@ -3,6 +3,7 @@ import { Image, View, Text } from "react-native";
 import Styles from "./Styles";
 import PrimaryButton from "../components/PrimaryButton";
 import BaseComponent from "../components/BaseComponent";
+import { StoredKeysUtls } from "../utils/StoredKeys";
 
 const screenUtils = require('../utils/ScreenNames')
 
@@ -12,13 +13,21 @@ export default class GetStartedScreen extends BaseComponent {
         super(props)
     }
 
-    render() {
+    navigateScreen = () => {
         const { navigation } = this.props;
+        // navigate screen Account Connect
+        navigation.replace(screenUtils.AccountConnectScreen);
+
+        // set flag
+        StoredKeysUtls.setBoolean(StoredKeysUtls.key_get_started, true);
+    }
+
+    render() {
         return (
             <View style={Styles.container} >
                 <Image source={require('../assets/images/ImgStart.png')} />
                 <View style={{ justifyContent: 'flex-end', marginBottom: 20 }}>
-                    <PrimaryButton type="primary" title="Get Started" onPress={() => navigation.replace(screenUtils.AccountConnectScreen)} />
+                    <PrimaryButton type="primary" title="Get Started" onPress={() => this.navigateScreen()} />
                 </View>
             </View>
         )

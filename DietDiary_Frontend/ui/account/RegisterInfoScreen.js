@@ -6,6 +6,7 @@ import Styles from "../Styles";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import PrimaryButton from "../../components/PrimaryButton";
 import { registerInformation } from "../../databases/Information";
+import { StoredKeysUtls } from "../../utils/StoredKeys";
 
 const screenUtils = require('../../utils/ScreenNames')
 const screenWidth = Dimensions.get('window').width;
@@ -39,10 +40,15 @@ export default class RegisterInfoScreen extends BaseComponent {
     }
 
     register = () => {
-        const fullname = this.state.fullname;
-        const dob = this.state.dob;
-        const height = this.state.height;
-        const weight = this.state.weight;
+        const fullname = this.state.fullname.trim();
+        const dob = this.state.dob.trim();
+        const height = this.state.height.trim();
+        const weight = this.state.weight.trim();
+
+        console.log(fullname);
+        console.log(dob);
+        console.log(height);
+        console.log(weight);
 
         if (fullname.length == 0 || dob.length == 0 || height.length == 0) {
             Alert.alert('Inform', "Please valid all field", [
@@ -54,20 +60,41 @@ export default class RegisterInfoScreen extends BaseComponent {
             return
         }
 
+        if (isNaN(height) || isNaN(weight)) {
+            Alert.alert('Error', "Please input a number in Weight and Height!", [
+                {
+                    text: 'OK',
+                    style: 'cancel'
+                }
+            ], { cancelable: true });
+            return
+        }
+
         const newInfo = {
             fullname,
             dob,
-            height,
+            height: parseFloat(height),
         }
 
-        registerInformation(newInfo).then().catch(error => console.log(error));
+        registerInformation(newInfo).then(result => {
+            //Navigate to Home
+            const { navigation } = this.props;
+            // remove all previous creens
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Home' }],
+            });
 
-        //Navigate to Home
-        const { navigation } = this.props;
-        // remove all previous creens
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Home' }],
+            // set flag
+            StoredKeysUtls.setBoolean(StoredKeysUtls.key_register_information, true);
+        }).catch(error => {
+
+            Alert.alert('Error', `${error}. Please quit app and try again`, [
+                {
+                    text: 'OK',
+                    style: 'cancel'
+                }
+            ], { cancelable: true });
         });
     }
 
@@ -109,11 +136,13 @@ export default class RegisterInfoScreen extends BaseComponent {
                         <View style={{ flexDirection: "row", justifyContent: 'space-between', width: primaryButtonWidth }}>
                             <View style={{ flexDirection: 'column' }}>
                                 <Text style={Styles.input_label}>Weight (kg)</Text>
-                                <TextInput style={Styles.weight_input} keyboardType='numeric'></TextInput>
+                                <TextInput style={Styles.weight_input} keyboardType='numeric'
+                                    onChangeText = {(text) => this.setState({weight: text})}></TextInput>
                             </View>
                             <View style={{ flexDirection: 'column' }}>
                                 <Text style={Styles.input_label}>Height (cm)</Text>
-                                <TextInput style={Styles.weight_input} keyboardType='numeric'></TextInput>
+                                <TextInput style={Styles.weight_input} keyboardType='numeric'
+                                onChangeText = {(text) => this.setState({height: text})}></TextInput>
                             </View>
                         </View>
                     </View>

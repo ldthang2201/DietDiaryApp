@@ -4,8 +4,8 @@ import { Dimensions, Image, SafeAreaView, Text, View } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import BaseComponent from "../components/BaseComponent";
 import PrimaryButton from "../components/PrimaryButton";
+import { StoredKeysUtls } from "../utils/StoredKeys";
 import Styles from "./Styles";
-import StoreKeys from "../utils/StoredKeys"
 
 const screenUtils = require("../utils/ScreenNames")
 const screenWidth = Dimensions.get('window').width;
@@ -14,11 +14,26 @@ const primaryButtonWidth = screenWidth * 0.85;
 export default class AccountConnectScreen extends BaseComponent {
 
     constructor(props) {
-        super(props)
+        super(props);
+
+        this.navigation = this.props.navigation;
+    }
+
+    onSkip = () => {
+        this.navigation.navigate(screenUtils.RegisterInfoScreen)
+        
+        StoredKeysUtls.setBoolean(StoredKeysUtls.key_account_connect, true);
+    }
+
+    onOpenLogin = () => {
+        this.navigation.navigate(screenUtils.LoginScreen);
+    }
+
+    onOpenCreateAccount = () => {
+        this.navigation.navigate(screenUtils.SigninScreen);
     }
 
     render() {
-        const {navigation} = this.props
         return (
             <View style={Styles.container_base} >
                 <View style = {{width: '80%', alignItems: 'center'}}>
@@ -29,16 +44,11 @@ export default class AccountConnectScreen extends BaseComponent {
                     </View>
                 </View>
                 <View style = {{marginBottom: 30}}>
-                    <PrimaryButton title='Log in' onPress={() => navigation.navigate(screenUtils.LoginScreen)} type='primary' />
-                    <PrimaryButton title='Create your account' onPress={() => navigation.navigate(screenUtils.SigninScreen)}/>
+                    <PrimaryButton title='Log in' onPress={() => this.onOpenLogin()} type='primary' />
+                    <PrimaryButton title='Create your account' onPress={() => this.onOpenCreateAccount()}/>
                     <Text style = {Styles.primary_button_text}
-                        onPress = {async () => {
-                            navigation.navigate(screenUtils.RegisterInfoScreen)
-                            try {
-                                await AsyncStorage.setItem(StoreKeys.key_account_connect, 'true')
-                            } catch (error) {
-                                return
-                            }
+                        onPress = {() => {
+                            this.onSkip();
                         }}>Skip</Text>
                 </View>
             </View>

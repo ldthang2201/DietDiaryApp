@@ -5,7 +5,7 @@ import { databaseOptions } from "./database";
 export const Information = {
     name: allSchemas.INFORMATION,
     properties: {
-        _id: "int",
+        _id: {type: "string", default: new Date().getTime().toString()},
         username: "string?",
         email: "string?",
         fullname: "string?",
@@ -46,7 +46,7 @@ export const registerInformation = newInfo => new Promise((resolve, reject) => {
                 getOne.dob = newInfo.dob;
                 getOne.height = newInfo.height;
             } else {
-                realm.create(allSchemas.INFORMATION, newAccount);
+                realm.create(allSchemas.INFORMATION, newInfo);
             }
         })
         resolve();

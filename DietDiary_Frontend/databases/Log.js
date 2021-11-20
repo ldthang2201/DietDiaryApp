@@ -5,7 +5,7 @@ import { databaseOptions } from "./database";
 export const Log = {
     name: allSchemas.LOG,
     properties: {
-        _id: "int",
+        _id: {type: "string", default: new Date().getTime().toString()},
         date: "string",
         time: "string",
         type: "string",
