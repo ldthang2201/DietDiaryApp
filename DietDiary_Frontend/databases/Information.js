@@ -12,16 +12,17 @@ export const Information = {
         dob: "string?",
         height: "float?",
         isVerify: { type: "bool", default: false },
-        update_at: { type: "date", default: new Date() },
-        upload_at: "date?",
-        delete_flag: { type: "bool", default: false },
+        createAt: { type: "date", default: new Date() },
+        updateAt: { type: "date", default: new Date() },
+        uploadAt: "date?",
+        isDelete: { type: "bool", default: false },
     }
 
 };
 
 export const createAccount = newAccount => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
-        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.delete_flag == false)
+        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.isDelete == false)
         realm.write(() => {
             if (currentInfo.length > 0) {
                 let getOne = currentInfo[0];
@@ -38,7 +39,7 @@ export const createAccount = newAccount => new Promise((resolve, reject) => {
 
 export const registerInformation = newInfo => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
-        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.delete_flag == false);
+        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.isDelete == false);
         realm.write(() => {
             if (currentInfo.length > 0) {
                 let getOne = currentInfo[0];
@@ -55,7 +56,7 @@ export const registerInformation = newInfo => new Promise((resolve, reject) => {
 
 export const getOne = () => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
-        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.delete_flag == false);
+        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.isDelete == false);
         let result = {};
         if (currentInfo.length > 0) {
             result = currentInfo[0];
@@ -66,13 +67,13 @@ export const getOne = () => new Promise((resolve, reject) => {
 
 export const logOut = () => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
-        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.delete_flag == false);
+        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.isDelete == false);
         realm.write(() => {
             if (currentInfo.length > 0) {
                 let getOne = currentInfo[0];
                 getOne.username = null,
                 getOne.email = null,
-                getOne.update_at = new Date();
+                getOne.updateAt = new Date();
             }
         })
         resolve();

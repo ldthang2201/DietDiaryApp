@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import BaseComponent from "../../components/BaseComponent";
 import PrimaryInput from "../../components/PrimaryInput";
-import PrimaryButton from "../../components/PrimaryButton"
+import PrimaryButton from "../../components/PrimaryButton";
 import Styles from "../Styles";
 import { validateEmail } from "../../utils/Utls";
 import { CreateAccount, TestApi } from "../../services/NetworkService";

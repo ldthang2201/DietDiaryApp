@@ -1,4 +1,5 @@
 import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { Weight } from 'src/weights/weight';
 import { AccountsService } from './accounts.service';
 
 @Controller('account')
@@ -16,10 +17,10 @@ export class AccountsController {
             throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
         }
         const newAccount = await this.accountService.createAccount(username, email, password);
-        return { 
-            result: 'OK', 
-            message: 'Create account successfully', 
-            accounts: newAccount, 
+        return {
+            result: 'OK',
+            message: 'Create account successfully',
+            accounts: newAccount,
             statusCode: 201
         };
     }
@@ -34,34 +35,47 @@ export class AccountsController {
             throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
         }
         const getAccount = await this.accountService.login(username, password);
-        return{ 
-            result: 'OK', 
-            message: 'Login successfully', 
-            accounts: getAccount, 
+        return {
+            result: 'OK',
+            message: 'Login successfully',
+            accounts: getAccount,
             statusCode: 200
         }
     }
 
-    // @Get()
-    // getAllAccounts() {
-    //     return { accounts: this.accountService.getAccounts() };
-    // }
+    @Get('/test')
+    @HttpCode(200)
+    async setWeightTest(
+        @Body('id') id: string,
+        @Body('weights') listWeights : [Weight]
+    ) {
+        // const a = await this.accountService.setWeights("619aff770ffe56bd9340c10b", []);
+    }
 
-    // @Get(':username')
-    // getAccount(
-    //     @Param('username') username: string
-    // ) {
-    //     console.log("sss" + username);
-    //     console.log('that is param')
-    // }
+    @Get('/getWeights/:id')
+    @HttpCode(200)
+    async getWeight(
+        @Param('id') id: string
+    ) {
+        const listWeight = await this.accountService.getWeights(id);
+        return {
+            result: 'OK',
+            message: 'Login successfully',
+            weights: listWeight,
+            statusCode: 200
+        }
+    }
 
-    // @Patch()
-    // updatePassword(
-    //     @Body('username') username: string,
-    //     @Body('email') email: string,
-    //     @Body('password') password: string
-    // ) {
-    //     return this.accountService.updatePassword(username, email, password);
-    // }
+    @Post('/setWeights')
+    @HttpCode(200)
+    async setWeight(
+        @Body('_id') id: string,
+        @Body('weights') listWeights : [Weight]
+    ) {
+        const a = await this.accountService.setWeights(id, listWeights);
+        console.log(id);
+        console.log(listWeights);
+        console.log(a);
+    }
 
 }

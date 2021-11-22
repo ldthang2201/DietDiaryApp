@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import bcrypt = require("bcrypt");
 import { comparePassword, encodePassword } from 'src/utls/bcrypt.utls';
+import { Weight } from 'src/weights/weight';
 
 @Injectable()
 export class AccountsService {
@@ -50,6 +51,33 @@ export class AccountsService {
         }
 
         return existAccount;
+    }
+
+    async setWeights(objectId: string, weights: [Weight]) {
+        const existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+        }
+        let newWeights = weights;
+        existAccount.weights.forEach(item => {
+            const existItem = weights.find(e => e._id == item._id);
+            if (existItem == null) {
+                newWeights.push(item);
+            }
+        })
+
+        existAccount.weights = newWeights;
+
+        return await existAccount.save();
+    }
+
+    async getWeights(objectId: string) {
+        const existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+        }
+
+        return existAccount.weights;
     }
 
     // getAccounts() {
