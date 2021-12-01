@@ -482,7 +482,7 @@ export default class LogScreen extends BaseComponent {
                     renderHeader={() => {
                         return (
                             <View style={Styles.bottom_sheet_header}>
-                                <View style={{ backgroundColor: colors.divider, width: 50, height: 10, borderRadius: 10 }}></View>
+                                <View style={{ backgroundColor: colors.divider, width: 40, height: 8, borderRadius: 10 }}></View>
                             </View>
                         )
                     }}

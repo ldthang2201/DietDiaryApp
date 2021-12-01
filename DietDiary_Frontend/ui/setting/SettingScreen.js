@@ -38,7 +38,7 @@ export default class SettingScreen extends BaseComponent {
 
     _onResume = this.props.navigation.addListener('focus', () => {
         this.updateState();
-      });
+    });
 
 
     updateState = async () => {

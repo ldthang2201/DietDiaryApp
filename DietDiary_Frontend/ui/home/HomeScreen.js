@@ -146,9 +146,11 @@ export default class HomeScreen extends BaseComponent {
                             return (displayDate)
                         }}
                     />
+                    <View style = {Styles.divider_parent}/>
                     <Text style={Styles.log_home_title}>{this.state.selectedDateDisplayed}</Text>
                     {!this.state.isNoRecord &&
                         (<View style={{ marginBottom: 20 }}>
+                            <View style = {Styles.divider_parent}/>
                             <View style={Styles.container_full_width_center_top}>
                                 <View style={Styles.log_home}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -162,6 +164,7 @@ export default class HomeScreen extends BaseComponent {
                                     </View>
                                 </View>
                             </View>
+                            <View style = {Styles.divider_child}/>
                             <View style={Styles.container_full_width_center_top}>
                                 <View style={Styles.log_home}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -175,6 +178,7 @@ export default class HomeScreen extends BaseComponent {
                                     </View>
                                 </View>
                             </View>
+                            <View style = {Styles.divider_parent}/>
                         </View>)
                     }
                     {this.state.isNoRecord && (

@@ -28,8 +28,6 @@ export default class ReminderScreen extends Component {
         super(props);
 
         this.params = props.route.params;
-
-        this.isFromSettings = this.params.isFromSettings;
     }
 
     pushNotification = async () => {

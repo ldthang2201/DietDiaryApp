@@ -20,6 +20,7 @@ import colors from './assets/colors';
 import Styles from './ui/Styles';
 import ReminderScreen from './ui/notification/ReminderScreen';
 import MenuScreen from './ui/menu/MenuScreen';
+import FoodsScreen from './ui/foods/FoodsScreen';
 
 const screenUtils = require('./utils/ScreenNames')
 const Stack = createNativeStackNavigator();
@@ -69,6 +70,12 @@ const App = () => {
           <Stack.Screen name={screenUtils.ReminderScreen}
             component={ReminderScreen}
             options={{ title: 'Reminder' }} />
+          <Stack.Screen name={screenUtils.SettingScreen}
+            component={SettingScreen}
+            options={{ title: 'Settings' }} />
+            <Stack.Screen name={screenUtils.FoodsScreen}
+            component={FoodsScreen}
+            options={{ title: 'List Foods' }} />
         </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>

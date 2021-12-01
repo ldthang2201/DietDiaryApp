@@ -168,14 +168,12 @@ export default StyleSheet.create({
   },
 
   log_home: {
-    width: screenWidth * 0.9,
-    height: 65,
+    width: screenWidth,
     paddingStart: 16,
     paddingEnd: 16,
+    height: 65,
     backgroundColor: 'white',
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
     justifyContent: 'space-between',
     alignItems: 'center'
   },
@@ -239,10 +237,10 @@ export default StyleSheet.create({
     width: 30,
     height: 30,
     tintColor: 'black'
-  }, 
+  },
 
   bottom_sheet_header: {
-    height: 30,
+    paddingTop: 10,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
@@ -334,12 +332,80 @@ export default StyleSheet.create({
     height: 1,
     backgroundColor: colors.divider,
     width: '100%',
-    marginStart: 16
+    marginStart: 20
   },
   divider_parent: {
     height: 1,
     backgroundColor: colors.divider,
     width: '100%',
   },
+
+  divider_menu_item: {
+    height: 1,
+    backgroundColor: colors.divider,
+    width: '100%',
+    marginStart: 52,
+  },
+
+  menu_item_container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 16,
+  },
+
+  menu_item_icon: {
+    width: 20,
+    height: 20,
+  },
+
+  menu_item_title: {
+    marginStart: 16,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+
+  menu_item_sub_title: {
+    marginStart: 16,
+    color: 'black',
+  },
+
+  food_container: {
+    flex: 1,
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    marginBottom: 20,
+    borderRadius: 20,
+  },
+
+  food_image: {
+    width: 100,
+    height: 100,
+    margin: 16,
+    borderRadius: 20
+  },
+
+  food_details_container: {
+    marginTop: 16,
+    marginBottom: 16,
+    marginStart: 10,
+    marginEnd: 10,
+    flex: 1,
+  },
+
+  food_details_title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+
+  food_details_info: {
+    fontSize: 13,
+    color: 'black',
+    maxWidth: '50%',
+    width: '40%',
+    fontWeight: "600"
+  }
 
 })

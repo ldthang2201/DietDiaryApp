@@ -105,7 +105,16 @@ export default class ChartScreen extends BaseComponent {
 
     componentDidMount() {
         this._onLoadData();
+        this._onResume;
     }
+
+    componentWillUnmount() {
+        this._onResume();
+    }
+
+    _onResume = this.props.navigation.addListener('focus', () => {
+        this._onLoadData();
+    });
 
     // get data of weight sorted
     _getListWeights = (lstWeight, numWeeks) => {
