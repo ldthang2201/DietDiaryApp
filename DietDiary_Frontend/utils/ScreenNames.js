@@ -8,6 +8,8 @@ const HomeScreen = "HomeScreen"
 const ChartScreen = "ChartScreen"
 const LogScreen = "LogScreen"
 const SettingScreen = "SettingScreen"
+const ReminderScreen = "ReminderScreen"
+const HomeApp = "Home"
 
 module.exports = {
     SplashScreen,
@@ -20,4 +22,6 @@ module.exports = {
     ChartScreen,
     LogScreen,
     SettingScreen,
+    ReminderScreen,
+    HomeApp,
 }

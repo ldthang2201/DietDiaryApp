@@ -4,11 +4,12 @@ import allSchemas from "./allSchemas"
 export const Weights = {
     name:  allSchemas.WEIGHTS,
     properties: {
-        _id: "int",
+        _id: {type: "string", default: new Date().getTime().toString()},
         create_at: { type: "date", default: new Date() },
         value: "float",
-        update_at: { type: "date", default: new Date() },
-        upload_at: "date",
-        delete_flag: { type: "bool", default: false},
+        createAt: { type: "date", default: new Date() },
+        updateAt: { type: "date", default: new Date() },
+        uploadAt: "date",
+        isDelete: { type: "bool", default: false},
     }
 }

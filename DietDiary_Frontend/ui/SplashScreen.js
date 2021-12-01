@@ -2,8 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { Component } from "react";
 import { Image, View } from "react-native";
 import BaseComponent from "../components/BaseComponent";
+import { StoredKeysUtls } from "../utils/StoredKeys";
 import Styles from "./Styles";
-import StoreKeys from "../utils/StoredKeys"
 
 const screenUtils = require('../utils/ScreenNames')
 
@@ -11,21 +11,21 @@ export default class SplashScreen extends BaseComponent {
 
     //navigate to getStartScreen
     _navigateScreen = async () => {
-        const {navigation} = this.props
+        const {navigation} = this.props;
         
-        // try {
-        //     if ((await AsyncStorage.getItem(StoreKeys.key_register_information)) == 'true')  {
-        //         navigation.replace(screenUtils.GetStartedScreen)
-        //     } else if ((await AsyncStorage.getItem(StoreKeys.key_account_connect)) == 'true') {
-        //         navigation.replace(screenUtils.RegisterInfoScreen)
-        //     } else {
-        //         navigation.replace(screenUtils.GetStartedScreen)
-        //     }
-        // } catch (error) {
-        //     navigation.replace(screenUtils.GetStartedScreen)
-        // }
-
-        navigation.replace('Home')
+        if (await StoredKeysUtls.getBoolean(StoredKeysUtls.key_register_information) == 'true') {
+            console.log('open home');
+            navigation.replace(screenUtils.HomeApp);
+        } else if (await StoredKeysUtls.getBoolean(StoredKeysUtls.key_account_connect) == 'true') {
+            console.log('open register info');
+            navigation.replace(screenUtils.RegisterInfoScreen);
+        } else if (await StoredKeysUtls.getBoolean(StoredKeysUtls.key_get_started) == 'true') {
+            console.log('open account');
+            navigation.replace(screenUtils.AccountConnectScreen);
+        } else {
+            console.log('open get started');
+            navigation.replace(screenUtils.GetStartedScreen);
+        }
     }
 
     componentDidMount() {

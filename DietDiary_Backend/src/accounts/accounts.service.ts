@@ -1,8 +1,11 @@
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { Account } from './account';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import bcrypt = require("bcrypt");
+import { comparePassword, encodePassword } from 'src/utls/bcrypt.utls';
+import { Weight } from 'src/weights/weight';
 
 @Injectable()
 export class AccountsService {
@@ -11,35 +14,91 @@ export class AccountsService {
     constructor(@InjectModel('Account') private readonly accountModel: Model<Account>) {}
 
     async createAccount(username: string, email: string, password: string) {
+
+        const hashPassword = await encodePassword(password);
+
         const newAccount = new this.accountModel({
             username: username,
             email: email,
-            password: password,
+            password: hashPassword,
         });
+        const existAccount = await this.accountModel.findOne({username: username});
+
+        const existEmail = await this.accountModel.findOne({email: email});
+
+        if (existAccount != null) {
+            throw new HttpException({result: 'Fail', message: 'Account Existed', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
+        }
+
+        if (existEmail != null) {
+            throw new HttpException({result: 'Fail', message: 'Email had been registered', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
+        }
+
         const result = await newAccount.save();
-        console.log(result);
-        return result.id as string;
+        return result;
     }
 
-    getAccounts() {
-        return new Date().toString();
-    }
+    async login(username: string, password: string) {
+        const hashPassword = await encodePassword(password);
 
-    getAccount(username: string) {
-        const account = this.accounts.find(acc => acc.username === username);
-        if (!account) {
-            throw new NotFoundException('Could not find account');
+        const existAccount = await this.accountModel.findOne({username: username} || {email: username});
+        if (existAccount == null) {
+            throw new HttpException({result: 'Fail', message: 'Username or password is incorrect', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
         }
-        return {...account};
+
+        if (!comparePassword(password, existAccount.password)) {
+            throw new HttpException({result: 'Fail', message: 'Password is not match', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+        }
+
+        return existAccount;
     }
 
-    updatePassword(username: string, email: string, password: string) {
-        console.log(username)
-        const account = this.accounts.find(acc => acc.username === username);
-        if (!account) {
-            throw new NotFoundException('Could not find account');
+    async setWeights(objectId: string, weights: [Weight]) {
+        const existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
         }
-        account.password = password;
-        return {...account};
+        let newWeights = weights;
+        existAccount.weights.forEach(item => {
+            const existItem = weights.find(e => e._id == item._id);
+            if (existItem == null) {
+                newWeights.push(item);
+            }
+        })
+
+        existAccount.weights = newWeights;
+
+        return await existAccount.save();
     }
+
+    async getWeights(objectId: string) {
+        const existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+        }
+
+        return existAccount.weights;
+    }
+
+    // getAccounts() {
+    //     return new Date().toString();
+    // }
+
+    // getAccount(username: string) {
+    //     const account = this.accounts.find(acc => acc.username === username);
+    //     if (!account) {
+    //         throw new NotFoundException('Could not find account');
+    //     }
+    //     return {...account};
+    // }
+
+    // updatePassword(username: string, email: string, password: string) {
+    //     console.log(username)
+    //     const account = this.accounts.find(acc => acc.username === username);
+    //     if (!account) {
+    //         throw new NotFoundException('Could not find account');
+    //     }
+    //     account.password = password;
+    //     return {...account};
+    // }
 }

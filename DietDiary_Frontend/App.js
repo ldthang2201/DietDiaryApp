@@ -1,5 +1,5 @@
 
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { Image, View } from 'react-native';
 import LoginScreen from './ui/account/LoginScreen';
 import RegisterInfoScreen from './ui/account/RegisterInfoScreen';
@@ -14,15 +14,29 @@ import LogScreen from './ui/log/LogScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import PushNotification from 'react-native-push-notification';
 
 import colors from './assets/colors';
 import Styles from './ui/Styles';
+import ReminderScreen from './ui/notification/ReminderScreen';
 
 const screenUtils = require('./utils/ScreenNames')
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const App = () => {
+
+  useEffect(() => {
+    createChannel();
+  })
+
+  const createChannel = () => {
+    PushNotification.createChannel({
+      channelId: "test-channel",
+      channelName: "channel test"
+    })
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -51,6 +65,9 @@ const App = () => {
           <Stack.Screen name='Home'
             component={Home}
             options={{ headerShown: false }} />
+          <Stack.Screen name={screenUtils.ReminderScreen}
+            component={ReminderScreen}
+            options={{ title: 'Reminder' }} />
         </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>
@@ -70,28 +87,28 @@ const Home = () => {
       }}>
       <Tab.Screen name={screenUtils.HomeScreen} component={HomeScreen}
         options={{
-          tabBarIcon: ({color}) => <Image source={require('./assets/icons/home.png')} style={{width: 25, height: 25, tintColor: color}} />,
+          tabBarIcon: ({ color }) => <Image source={require('./assets/icons/home.png')} style={{ width: 25, height: 25, tintColor: color }} />,
           tabBarLabel: 'HOME',
           title: 'Home'
         }} />
-      <Tab.Screen name={screenUtils.ChartScreen} component={ChartScreen} 
-      options={{
-        tabBarIcon: ({color}) => <Image source={require('./assets/icons/chart.png')} style={{width: 25, height: 25, tintColor: color}} />,
-        tabBarLabel: 'CHART',
-        title: 'Chart'
-      }}/>
-      <Tab.Screen name={screenUtils.LogScreen} component={LogScreen} 
-      options={{
-        tabBarIcon: ({color}) => <Image source={require('./assets/icons/log.png')} style={{width: 25, height: 25, tintColor: color}} />,
-        tabBarLabel: 'LOGS',
-        title: 'Logs'
-      }}/>
-      <Tab.Screen name={screenUtils.SettingScreen} component={SettingScreen} 
-      options={{
-        tabBarIcon: ({color}) => <Image source={require('./assets/icons/settings.png')} style={{width: 25, height: 25, tintColor: color}} />,
-        tabBarLabel: 'SETTINGS',
-        title: 'Settings'
-      }}/>
+      <Tab.Screen name={screenUtils.ChartScreen} component={ChartScreen}
+        options={{
+          tabBarIcon: ({ color }) => <Image source={require('./assets/icons/chart.png')} style={{ width: 25, height: 25, tintColor: color }} />,
+          tabBarLabel: 'CHART',
+          title: 'Chart'
+        }} />
+      <Tab.Screen name={screenUtils.LogScreen} component={LogScreen}
+        options={{
+          tabBarIcon: ({ color }) => <Image source={require('./assets/icons/log.png')} style={{ width: 25, height: 25, tintColor: color }} />,
+          tabBarLabel: 'LOGS',
+          title: 'Logs'
+        }} />
+      <Tab.Screen name={screenUtils.SettingScreen} component={SettingScreen}
+        options={{
+          tabBarIcon: ({ color }) => <Image source={require('./assets/icons/settings.png')} style={{ width: 25, height: 25, tintColor: color }} />,
+          tabBarLabel: 'SETTINGS',
+          title: 'Settings'
+        }} />
     </Tab.Navigator>
   );
 }

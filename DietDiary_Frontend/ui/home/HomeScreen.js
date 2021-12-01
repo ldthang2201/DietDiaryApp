@@ -135,7 +135,7 @@ export default class HomeScreen extends BaseComponent {
         const string = today.toJSON();
         const now = JSON.stringify(string)
         return (
-            <ScrollView style={{ backgroundColor: colors.baseBackground }}>
+            <ScrollView style={{ backgroundColor: colors.basepopBackground }}>
                 <View>
                     <Calendar
                         // Initially visible month. Default = Date()

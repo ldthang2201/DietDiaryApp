@@ -5,5 +5,8 @@ module.exports = {
     disable: '#C2DCD0',
     good: '#42CB26',
     notgood: '#E9B96F',
-    selected: '#DEE4CF'
+    selected: '#DEE4CF',
+    basepopBackground: "#F4F6F4",
+    divider: "#C0C0C0",
+    button_clicked: "#C0C0C0"
 }
