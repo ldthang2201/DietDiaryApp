@@ -19,6 +19,7 @@ import PushNotification from 'react-native-push-notification';
 import colors from './assets/colors';
 import Styles from './ui/Styles';
 import ReminderScreen from './ui/notification/ReminderScreen';
+import MenuScreen from './ui/menu/MenuScreen';
 
 const screenUtils = require('./utils/ScreenNames')
 const Stack = createNativeStackNavigator();
@@ -103,11 +104,11 @@ const Home = () => {
           tabBarLabel: 'LOGS',
           title: 'Logs'
         }} />
-      <Tab.Screen name={screenUtils.SettingScreen} component={SettingScreen}
+      <Tab.Screen name={screenUtils.MenuScreen} component={MenuScreen}
         options={{
-          tabBarIcon: ({ color }) => <Image source={require('./assets/icons/settings.png')} style={{ width: 25, height: 25, tintColor: color }} />,
-          tabBarLabel: 'SETTINGS',
-          title: 'Settings'
+          tabBarIcon: ({ color }) => <Image source={require('./assets/icons/threelines.png')} style={{ width: 25, height: 25, tintColor: color }} />,
+          tabBarLabel: 'MENU',
+          title: 'Menu'
         }} />
     </Tab.Navigator>
   );

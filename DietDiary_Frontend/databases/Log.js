@@ -9,6 +9,7 @@ export const Log = {
         date: "string",
         time: "string",
         type: "string",
+        description: { type: "string?", default: "" },
         createAt: { type: "date", default: new Date() },
         updateAt: { type: "date", default: new Date() },
         uploadAt: "date?",
@@ -61,5 +62,15 @@ export const getListLogsByDate = date => new Promise((resolve, reject) => {
         const listAllLogs = realm.objects(allSchemas.LOG);
         const listLog = listAllLogs.filter(log => log.date == date);
         resolve(listLog);
+    }).catch((error) => reject(error));
+})
+
+export const updateDescription = (primaryKey, description) => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        realm.write(() => {
+            let existLog = realm.objectForPrimaryKey(allSchemas.LOG, primaryKey);
+            existLog.description = description;
+            resolve();
+        })
     }).catch((error) => reject(error));
 })

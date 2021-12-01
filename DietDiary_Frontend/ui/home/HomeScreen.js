@@ -123,6 +123,9 @@ export default class HomeScreen extends BaseComponent {
                                         isNoRecord: isNoRecord,
                                         selectedDateDisplayed: date.state === 'today' ? 'Today' : date.accessibilityLabel,
                                         selectedDate: date.date.dateString,
+                                        displayCalendar: selectedCalendar,
+                                        eats: selectedCalendar === undefined ? 0 : selectedCalendar.eatingTime,
+                                        exercises: selectedCalendar === undefined ? 0 : selectedCalendar.doExerciseTime,
                                     })
                                 }}>
                                     <View style={{ justifyContent: 'center', alignItems: 'center', width: calendarItemWidth, height: calendarItemHeight, backgroundColor: displayBackground }}>

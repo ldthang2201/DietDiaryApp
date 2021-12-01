@@ -5,6 +5,7 @@ import Styles from "../Styles";
 import { Dimensions } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import colors from "../../assets/colors";
+import { getAllCalendars } from "../../databases/Calendar";
 
 const screenWidth = Dimensions.get("window").width;
 const DateTimeUtls = require('../../utils/DatetimeUtls')
@@ -91,17 +92,19 @@ export default class ChartScreen extends BaseComponent {
     constructor(props) {
         super(props);
 
-        const lstWeightDisplay = this._getListWeights(lstWeight, FIRST_WEEK);
-
         this.state = {
-            lstWeight: lstWeight,
+            lstWeight: [],
             displayData: this._getData(lstWeight, FIRST_WEEK),
             displayedDays: FIRST_WEEK, // display number of previous from now
-            lstWeightDisplay, // get List Weights in a week
+            lstWeightDisplay: [], // get List Weights in a week
             displayTitleChart: (FIRST_WEEK / FIRST_WEEK) + DISPLAY_TITLE_CHART_WEEK,
             isNext: false,
-            isShow: lstWeightDisplay.length > 0,
+            isShow: false,
         }
+    }
+
+    componentDidMount() {
+        this._onLoadData();
     }
 
     // get data of weight sorted
@@ -182,6 +185,17 @@ export default class ChartScreen extends BaseComponent {
                 isShow: newListWeight.length > 0
             }
         })
+    }
+
+    _onLoadData = () => {
+        getAllCalendars().then(result => {
+            const lstWeightDisplay = this._getListWeights(result, FIRST_WEEK);
+            this.setState({
+                lstWeightDisplay,
+                lstWeight: result,
+                isShow: lstWeightDisplay.length > 0,
+            })
+        }).catch(error => console.log(error));
     }
 
     render() {

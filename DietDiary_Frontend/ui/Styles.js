@@ -79,7 +79,15 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     color: colors.primaryColor,
     textAlign: 'center',
-    textDecorationLine: 'underline', 
+    textDecorationLine: 'underline',
+    margin: 10,
+  },
+
+  secondary_button_text: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: colors.primaryColor,
+    textAlign: 'center',
     margin: 10,
   },
 
@@ -151,9 +159,9 @@ export default StyleSheet.create({
   },
 
   bottom_tab: {
-    paddingTop:5, 
-    paddingBottom: 5, 
-    marginStart: 10, 
+    paddingTop: 5,
+    paddingBottom: 5,
+    marginStart: 10,
     marginEnd: 10,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10
@@ -216,6 +224,35 @@ export default StyleSheet.create({
     justifyContent: 'space-between'
   },
 
+  log_item_time: {
+    color: 'black',
+  },
+
+  bottom_sheet_content: {
+    height: 300,
+    padding: 16,
+    paddingTop: 0,
+    backgroundColor: 'white',
+  },
+
+  bottom_sheet_icon: {
+    width: 30,
+    height: 30,
+    tintColor: 'black'
+  }, 
+
+  bottom_sheet_header: {
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderTopColor: colors.divider,
+    borderWidth: 1,
+    borderBottomColor: 'white',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+
   header: {
     borderBottomWidth: 1,
     borderBottomColor: 'gray'
@@ -230,7 +267,7 @@ export default StyleSheet.create({
   history_weight_item_container: {
     width: screenWidth * 0.9,
     height: 55,
-    backgroundColor:  'white',
+    backgroundColor: 'white',
     borderBottomWidth: 1,
     borderColor: 'gray',
     paddingStart: 20,
@@ -249,7 +286,7 @@ export default StyleSheet.create({
   history_weight_item_value: {
     marginStart: 10,
     fontSize: 18,
-    fontWeight: 'bold'
+    color: 'black'
   },
 
   history_weight_item_icon: {

@@ -7,6 +7,7 @@ import App from './App';
 import {name as appName} from './app.json';
 import ReminderScreen from './ui/notification/ReminderScreen';
 import PushNotification from "react-native-push-notification";
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler'
 
 // Must be outside of any component LifeCycle (such as `componentDidMount`).
 PushNotification.configure({
@@ -18,4 +19,4 @@ PushNotification.configure({
     requestPermissions: Platform.OS === 'ios'
   });
 
-AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(App));
