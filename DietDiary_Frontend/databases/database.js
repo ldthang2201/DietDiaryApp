@@ -1,11 +1,11 @@
 import Realm from "realm";
+import { Calendar } from "./Calendar";
 import { Information } from "./Information";
 import { Log } from "./Log";
-import { Weights } from "./Weights";
 
 export const databaseOptions = {
     path: 'DietDiary.realm',
-    schema: [Information, Weights, Log],
+    schema: [Information, Calendar, Log],
     schemaVersion: 1,
 }
 

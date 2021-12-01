@@ -73,7 +73,7 @@ export default class SigninScreen extends BaseComponent {
                                 text: 'OK',
                                 onPress: () => {
                                     let newAccount = {
-                                        _id: result.accounts._id,
+                                        primaryKey: result.accounts._id,
                                         username: username,
                                         email: email,
                                     };

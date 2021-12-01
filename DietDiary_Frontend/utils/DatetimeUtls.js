@@ -2,10 +2,19 @@ const moment = require('moment');
 
 export const yyyy_MM_DD = 'yyyy-MM-DD'
 
+/**
+ * Get now with format yyyy_MM_DD
+ * @returns 
+ */
 export const getDateWithString = () => {
     return moment(new Date()).format(yyyy_MM_DD);
 }
 
+/**
+ * Get Date() with param
+ * @param {*} date (string with fromat, long)
+ * @returns 
+ */
 export const getDate = (date) => {
     return new Date(date);
 }

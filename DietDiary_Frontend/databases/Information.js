@@ -5,7 +5,7 @@ import { databaseOptions } from "./database";
 export const Information = {
     name: allSchemas.INFORMATION,
     properties: {
-        _id: { type: "string", default: new Date().getTime().toString() },
+        primaryKey: { type: "string", default: new Date().getTime().toString() },
         username: "string?",
         email: "string?",
         fullname: "string?",
@@ -15,6 +15,7 @@ export const Information = {
         createAt: { type: "date", default: new Date() },
         updateAt: { type: "date", default: new Date() },
         uploadAt: "date?",
+        isUpdate: { type: "bool", default: false},
         isDelete: { type: "bool", default: false },
     }
 
@@ -28,7 +29,7 @@ export const createAccount = newAccount => new Promise((resolve, reject) => {
                 let getOne = currentInfo[0];
                 getOne.username = newAccount.username;
                 getOne.email = newAccount.email;
-                getOne._id = newAccount._id
+                getOne.primaryKey = newAccount.primaryKey
             } else {
                 realm.create(allSchemas.INFORMATION, newAccount);
             }
@@ -46,6 +47,8 @@ export const registerInformation = newInfo => new Promise((resolve, reject) => {
                 getOne.fullname = newInfo.fullname;
                 getOne.dob = newInfo.dob;
                 getOne.height = newInfo.height;
+                getOne.isUpdate = true;
+                getOne.updateAt = new Date();
             } else {
                 realm.create(allSchemas.INFORMATION, newInfo);
             }

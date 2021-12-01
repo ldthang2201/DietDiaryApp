@@ -4,6 +4,7 @@ import Styles from "./Styles";
 import PrimaryButton from "../components/PrimaryButton";
 import BaseComponent from "../components/BaseComponent";
 import { StoredKeysUtls } from "../utils/StoredKeys";
+import { getDateWithString } from "../utils/DatetimeUtls";
 
 const screenUtils = require('../utils/ScreenNames')
 
@@ -20,6 +21,10 @@ export default class GetStartedScreen extends BaseComponent {
 
         // set flag
         StoredKeysUtls.setBoolean(StoredKeysUtls.key_get_started, true);
+    }
+
+    componentWillUnmount() {
+        StoredKeysUtls.setString(StoredKeysUtls.key_date_using_app, getDateWithString());
     }
 
     render() {

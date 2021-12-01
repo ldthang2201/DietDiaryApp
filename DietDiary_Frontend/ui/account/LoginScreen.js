@@ -59,7 +59,7 @@ export default class LoginScreen extends BaseComponent {
                                 onPress: () => {
                                     const acc = result.accounts;
                                     const newAccount = {
-                                        _id: acc._id,
+                                        primaryKey: acc._id,
                                         username: acc.username,
                                         email: acc.email,
                                     }

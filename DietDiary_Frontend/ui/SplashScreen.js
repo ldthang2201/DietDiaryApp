@@ -2,6 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { Component } from "react";
 import { Image, View } from "react-native";
 import BaseComponent from "../components/BaseComponent";
+import { createNewCalendar, getLastCalendar } from "../databases/Calendar";
+import { getDateWithString, getNextDate } from "../utils/DatetimeUtls";
 import { StoredKeysUtls } from "../utils/StoredKeys";
 import Styles from "./Styles";
 
@@ -11,8 +13,8 @@ export default class SplashScreen extends BaseComponent {
 
     //navigate to getStartScreen
     _navigateScreen = async () => {
-        const {navigation} = this.props;
-        
+        const { navigation } = this.props;
+
         if (await StoredKeysUtls.getBoolean(StoredKeysUtls.key_register_information) == 'true') {
             console.log('open home');
             navigation.replace(screenUtils.HomeApp);
@@ -32,14 +34,76 @@ export default class SplashScreen extends BaseComponent {
         setTimeout(() => {
             this._navigateScreen()
         }, 3000)
+        this._fillCalendar();
+    }
+
+    _fillCalendar = () => {
+        getLastCalendar().then(result => {
+            // first time using app
+            if (result == null) {
+                this._createCalendar().then(result => {
+                    createNewCalendar(result).then().catch(error => console.log(error));
+                })
+            } else {
+                const nextDate = getNextDate(result.date);
+                while (1) {
+                    const today = getDateWithString();
+                    // if nextDate is current date
+                    if (nextDate == today) {
+                        const newCalendar = {
+                            date: nextDate,
+                            eatTime: result.eatTime,
+                            exerciseTime: result.exerciseTime,
+                            weight: result.weight,
+                            preWeight : result.weight,
+                        };
+                        createNewCalendar(newCalendar).then().catch(error => console.log(error));
+                    } else if (nextDate < today) {
+                        const newCalendar = {
+                            date: nextDate,
+                            eatTime: result.eatTime,
+                            eatingTime: -1,
+                            exerciseTime: result.exerciseTime,
+                            doExerciseTime: -1,
+                            weight: result.weight,
+                            preWeight : result.weight,
+                        };
+                        createNewCalendar(newCalendar).then().catch(error => console.log(error));
+                    } else {
+                        break;
+                    }
+                }
+            }
+        })
+    }
+
+    _createCalendar = async () => {
+        const eatTime = await StoredKeysUtls.getNumber(StoredKeysUtls.key_eating_times);
+        const exeTime = await StoredKeysUtls.getNumber(StoredKeysUtls.key_do_exercise_times);
+        const newCalendar = {
+            date: getDateWithString(),
+            eatTime: eatTime,
+            exerciseTime: exeTime,
+            weight: -1,
+            preWeight : -1,
+        };
+
+        if (eatTime == "-1") {
+            newCalendar.eatTime = 3;
+        }
+        if (exeTime == "-1") {
+            newCalendar.exerciseTime = 1;
+        }
+
+        return newCalendar;
     }
 
     render() {
-        return(
-            <View style = {Styles.container}>
-                <Image source = {require('../assets/images/ImgSplash.png')}
-                    resizeMode = 'contain'
-                    style={Styles.img_splash}/>
+        return (
+            <View style={Styles.container}>
+                <Image source={require('../assets/images/ImgSplash.png')}
+                    resizeMode='contain'
+                    style={Styles.img_splash} />
             </View>
         )
     }

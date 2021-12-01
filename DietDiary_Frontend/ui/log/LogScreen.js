@@ -7,6 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { createNewLog, getAllLog, deleteLog, updateLogTime } from "../../databases/Log";
 import realm from "../../databases/database";
 import colors from "../../assets/colors";
+import { updateCalendar } from "../../databases/Calendar";
 
 const DateTimeUtls = require('../../utils/DatetimeUtls')
 
@@ -85,7 +86,7 @@ export default class LogScreen extends BaseComponent {
 
     // when click cancel button in edit mode
     _onCancel = () => {
-        this.setState({ isDeleteMode: false })
+        this.setState({ isDeleteMode: false, isShowTimePicker: false })
         this.listSelectedLog = []
     }
 
@@ -110,7 +111,8 @@ export default class LogScreen extends BaseComponent {
                         onPress: () => {
                             deleteLog(this.listSelectedLog).then(() => {
                                 this.listSelectedLog = [];
-                                ToastAndroid.show('Delete selected log successfully!', ToastAndroid.LONG)
+                                ToastAndroid.show('Delete selected log successfully!', ToastAndroid.LONG);
+                                updateCalendar(this.state.dateDisplay).then().catch(error => console.log(error));
                             })
                         }
                     }
@@ -121,6 +123,7 @@ export default class LogScreen extends BaseComponent {
             deleteLog(this.listSelectedLog).then(() => {
                 this.listSelectedLog = [];
                 ToastAndroid.show('Delete selected log successfully!', ToastAndroid.LONG)
+                updateCalendar(this.state.dateDisplay).then().catch(error => console.log(error));
             })
         }
     }
@@ -152,13 +155,16 @@ export default class LogScreen extends BaseComponent {
         const now = new Date();
         const timeString = DateTimeUtls.getDisplayTime(now.getTime());
         const newLog = {
-            _id: now.getTime().toString(),
+            primaryKey: now.getTime().toString(),
             date: this.state.dateDisplay,
             time: timeString,
             type: EATING_TYPE,
         }
 
-        new createNewLog(newLog).then(ToastAndroid.show('Add eating log successfully!', ToastAndroid.LONG)).catch((error) => console.log(error))
+        new createNewLog(newLog).then(() => {
+            ToastAndroid.show('Add eating log successfully!', ToastAndroid.LONG);
+            updateCalendar(this.state.dateDisplay).then().catch(error => console.log(error));
+        }).catch((error) => console.log(error))
     }
 
     // when click add button in exercise list
@@ -188,13 +194,16 @@ export default class LogScreen extends BaseComponent {
         const now = new Date();
         const timeString = DateTimeUtls.getDisplayTime(now.getTime());
         const newLog = {
-            _id: now.getTime().toString(),
+            primaryKey: now.getTime().toString(),
             date: this.state.dateDisplay,
             time: timeString,
             type: EXERCISE_TYPE,
         }
 
-        new createNewLog(newLog).then(ToastAndroid.show('Add exercise log successfully!', ToastAndroid.LONG)).catch((error) => console.log(error));
+        new createNewLog(newLog).then(() => {
+            ToastAndroid.show('Add exercise log successfully!', ToastAndroid.LONG);
+            updateCalendar(this.state.dateDisplay).then().catch(error => console.log(error));
+        }).catch((error) => console.log(error));
     }
 
     // when click previous in header time
@@ -250,6 +259,7 @@ export default class LogScreen extends BaseComponent {
     // when click time in log to change time
     _onChangeTimeLog = (even, selectedDate) => {
         if (selectedDate === undefined) {
+            this._onCancel();
             return;
         }
 
@@ -288,6 +298,7 @@ export default class LogScreen extends BaseComponent {
                 })
             }).catch((error) => console.log(error));
         }
+        this._onCancel();
     }
 
 
@@ -311,7 +322,7 @@ export default class LogScreen extends BaseComponent {
                                 activeOpacity={this.state.isNext ? 0.2 : 1}>
                                 <Image
                                     source={require('../../assets/icons/right-arrow.png')}
-                                    style={this.state.isNext ? Styles.arrow : { margin: 10, width: 20, height: 20, tintColor: colors.disable }}/>
+                                    style={this.state.isNext ? Styles.arrow : { margin: 10, width: 20, height: 20, tintColor: colors.disable }} />
                             </TouchableOpacity>
                         </View>
 
@@ -326,7 +337,7 @@ export default class LogScreen extends BaseComponent {
                         </View>
                         {lstEatingLogs.map((item) => {
                             return (
-                                <TouchableOpacity activeOpacity={0.7} onLongPress={() => this.setState({ isDeleteMode: true })} key={item._id}>
+                                <TouchableOpacity activeOpacity={0.7} onLongPress={() => this.setState({ isDeleteMode: true })} key={item.primaryKey}>
                                     <View style={Styles.history_weight_item_container}>
                                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                                             {this.state.isDeleteMode &&
@@ -348,14 +359,14 @@ export default class LogScreen extends BaseComponent {
                                         <Text onPress={() => {
                                             this.setState({
                                                 isShowTimePicker: true,
-                                                selectedLogId: item._id,
+                                                selectedLogId: item.primaryKey,
                                             });
                                         }}>{item.time}</Text>
                                     </View>
                                 </TouchableOpacity>
                             );
                         })}
-                        {lstEatingLogs.length === 0 && <Text style = {{fontSize: 18, margin: 10}}>No record</Text>}
+                        {lstEatingLogs.length === 0 && <Text style={{ fontSize: 18, margin: 10 }}>No record</Text>}
 
                         {/* EXERCISE LOG */}
                         <View style={Styles.log_title_container}>
@@ -368,7 +379,7 @@ export default class LogScreen extends BaseComponent {
                         </View>
                         {lstExerciseLogs.map((item) => {
                             return (
-                                <TouchableOpacity activeOpacity={0.7} onLongPress={() => this.setState({ isDeleteMode: true })} key={item._id}>
+                                <TouchableOpacity activeOpacity={0.7} onLongPress={() => this.setState({ isDeleteMode: true })} key={item.primaryKey}>
                                     <View style={Styles.history_weight_item_container}>
                                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                                             {this.state.isDeleteMode &&
@@ -390,14 +401,14 @@ export default class LogScreen extends BaseComponent {
                                         <Text onPress={() => {
                                             this.setState({
                                                 isShowTimePicker: true,
-                                                selectedLogId: item._id,
+                                                selectedLogId: item.primaryKey,
                                             });
                                         }}>{item.time}</Text>
                                     </View>
                                 </TouchableOpacity>
                             );
                         })}
-                        {lstExerciseLogs.length === 0 && <Text style = {{fontSize: 18, margin: 10}}>No record</Text>}
+                        {lstExerciseLogs.length === 0 && <Text style={{ fontSize: 18, margin: 10 }}>No record</Text>}
                     </View>
                 </ScrollView>
                 {this.state.isDeleteMode &&
@@ -415,7 +426,8 @@ export default class LogScreen extends BaseComponent {
                         mode={'time'}
                         is24Hour={true}
                         display="default"
-                        onChange={this._onChangeTimeLog} />}
+                        onChange={this._onChangeTimeLog}
+                        onTouchCancel={() => this._onCancel()} />}
             </View>
         )
     }

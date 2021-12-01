@@ -7,7 +7,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import PrimaryButton from "../../components/PrimaryButton";
 import { registerInformation } from "../../databases/Information";
 import { StoredKeysUtls } from "../../utils/StoredKeys";
-
+import { getTodayCalendar, updateWeight } from "../../databases/Calendar";
+import { getDateWithString } from "../../utils/DatetimeUtls";
 const screenUtils = require('../../utils/ScreenNames')
 const screenWidth = Dimensions.get('window').width;
 const primaryButtonWidth = screenWidth * 0.85;
@@ -77,6 +78,8 @@ export default class RegisterInfoScreen extends BaseComponent {
             height: parseFloat(height),
         }
 
+        updateWeight(parseFloat(weight)).then().catch(error => console.log(error));
+
         registerInformation(newInfo).then(result => {
             //Navigate to Home
             const { navigation } = this.props;
@@ -107,11 +110,13 @@ export default class RegisterInfoScreen extends BaseComponent {
 
     updateState = async () => {
         const user = await this.getCurrentUser();
-        if (user != null) {
+        const calendar = await this.getCurrentCalendar();
+        if (user && calendar) {
             this.setState({
                 fullname: user.fullname,
                 dob: user.dob,
-                height: String(user.height),
+                height: String(user.height) == undefined ? "" : String(user.height),
+                weight: String(calendar.weight) == "-1" ? "" : String(calendar.weight),
             })
         }
     }
