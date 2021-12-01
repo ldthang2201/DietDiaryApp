@@ -5,13 +5,14 @@ import { databaseOptions } from "./database";
 export const Log = {
     name: allSchemas.LOG,
     properties: {
-        _id: "int",
+        _id: {type: "string", default: new Date().getTime().toString()},
         date: "string",
         time: "string",
         type: "string",
-        update_at: { type: "date", default: new Date() },
-        upload_at: "date?",
-        delete_flag: { type: "bool", default: false },
+        createAt: { type: "date", default: new Date() },
+        updateAt: { type: "date", default: new Date() },
+        uploadAt: "date?",
+        isDelete: { type: "bool", default: false },
     },
     primaryKey: "_id",
 }

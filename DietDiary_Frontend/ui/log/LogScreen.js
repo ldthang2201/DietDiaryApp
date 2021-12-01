@@ -144,7 +144,7 @@ export default class LogScreen extends BaseComponent {
                 { cancelable: true }
             );
         } else {
-            this._onAddEatingLog
+            this._onAddEatingLog()
         }
     }
 
@@ -152,7 +152,7 @@ export default class LogScreen extends BaseComponent {
         const now = new Date();
         const timeString = DateTimeUtls.getDisplayTime(now.getTime());
         const newLog = {
-            _id: now.getTime(),
+            _id: now.getTime().toString(),
             date: this.state.dateDisplay,
             time: timeString,
             type: EATING_TYPE,
@@ -180,7 +180,7 @@ export default class LogScreen extends BaseComponent {
                 { cancelable: true }
             );
         } else {
-            this._onAddExerciseLog
+            this._onAddExerciseLog()
         }
     }
 
@@ -188,7 +188,7 @@ export default class LogScreen extends BaseComponent {
         const now = new Date();
         const timeString = DateTimeUtls.getDisplayTime(now.getTime());
         const newLog = {
-            _id: now.getTime(),
+            _id: now.getTime().toString(),
             date: this.state.dateDisplay,
             time: timeString,
             type: EXERCISE_TYPE,

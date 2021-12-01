@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import bcrypt = require("bcrypt");
 import { comparePassword, encodePassword } from 'src/utls/bcrypt.utls';
+import { Weight } from 'src/weights/weight';
 
 @Injectable()
 export class AccountsService {
@@ -26,11 +27,11 @@ export class AccountsService {
         const existEmail = await this.accountModel.findOne({email: email});
 
         if (existAccount != null) {
-            throw new HttpException({result: 'fail', message: 'Account Existed', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
+            throw new HttpException({result: 'Fail', message: 'Account Existed', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
         }
 
         if (existEmail != null) {
-            throw new HttpException({result: 'fail', message: 'Email had been registered', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
+            throw new HttpException({result: 'Fail', message: 'Email had been registered', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
         }
 
         const result = await newAccount.save();
@@ -40,18 +41,43 @@ export class AccountsService {
     async login(username: string, password: string) {
         const hashPassword = await encodePassword(password);
 
-        console.log(hashPassword);
-
         const existAccount = await this.accountModel.findOne({username: username} || {email: username});
         if (existAccount == null) {
-            throw new HttpException({result: 'fail', message: 'Username or password is incorrect', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+            throw new HttpException({result: 'Fail', message: 'Username or password is incorrect', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
         }
 
         if (!comparePassword(password, existAccount.password)) {
-            throw new HttpException({result: 'fail', message: 'Password is not match', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+            throw new HttpException({result: 'Fail', message: 'Password is not match', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
         }
 
         return existAccount;
+    }
+
+    async setWeights(objectId: string, weights: [Weight]) {
+        const existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+        }
+        let newWeights = weights;
+        existAccount.weights.forEach(item => {
+            const existItem = weights.find(e => e._id == item._id);
+            if (existItem == null) {
+                newWeights.push(item);
+            }
+        })
+
+        existAccount.weights = newWeights;
+
+        return await existAccount.save();
+    }
+
+    async getWeights(objectId: string) {
+        const existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+        }
+
+        return existAccount.weights;
     }
 
     // getAccounts() {

@@ -30,9 +30,15 @@ export default StyleSheet.create({
 
   container_space_between_base: {
     flex: 1,
-    backgroundColor: colors.baseBackground,
+    backgroundColor: colors.basepopBackground,
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+
+  container_top_left_base: {
+    flex: 1,
+    backgroundColor: colors.basepopBackground,
+    alignItems: 'flex-start',
   },
 
   container_top_base: {
@@ -48,7 +54,7 @@ export default StyleSheet.create({
 
   container_center_top: {
     flex: 1,
-    backgroundColor: colors.baseBackground,
+    backgroundColor: colors.basepopBackground,
     alignItems: 'center',
   },
 
@@ -263,6 +269,40 @@ export default StyleSheet.create({
     borderWidth: 1,
     borderRadius: 20,
     borderColor: 'red'
+  },
+
+  settings_group_title: {
+    fontSize: 20,
+    fontWeight: '700',
+    paddingStart: 16,
+    paddingEnd: 16,
+    paddingTop: 16,
+  },
+
+  settings_group_container: {
+    backgroundColor: 'white',
+  },
+
+  settings_item_container: {
+    backgroundColor: 'white',
+    padding: 16,
+  },
+
+  settings_item_title: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+  divider_child: {
+    height: 1,
+    backgroundColor: colors.divider,
+    width: '100%',
+    marginStart: 16
+  },
+  divider_parent: {
+    height: 1,
+    backgroundColor: colors.divider,
+    width: '100%',
   },
 
 })

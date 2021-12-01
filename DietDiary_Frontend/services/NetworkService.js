@@ -1,4 +1,4 @@
-import { apiCreateAccount } from "../utils/ApiUri";
+import { apiCreateAccount, apiLogin } from "../utils/ApiUri";
 
 const HEADER = {
     'Accept': 'application/json',
@@ -14,26 +14,49 @@ export async function CreateAccount(username, email, password) {
             password: password
         }
         console.log(apiCreateAccount);
-        let response = await fetch(apiCreateAccount, {
-            method: POST,
-            headers: HEADER,
-            body: JSON.stringify(param)
-        });
-        let result = await response.json();
+        let response = new Promise((resolve, reject) => {
+            fetch(apiCreateAccount, {
+                method: POST,
+                headers: HEADER,
+                body: JSON.stringify(param)
+            }).then((result) => resolve(result.json())).catch((error) => reject(error));
+            setTimeout(() => {
+                reject({
+                    result: 'Fail',
+                    message: 'Network request failed, please try later!'
+                })
+            }, 10000)
+        })
+        let result = await response;
         return result;
     } catch (error) {
         return error;
     }
 }
 
-export async function TestApi() {
+export async function Login(username, password) {
     try {
-        let response = await fetch("http://192.168.1.26:3000/", {
-            method: 'GET',
-
-        });
-        console.log(`response is ${response.json}`);
+        const param = {
+            username: username,
+            password: password
+        }
+        console.log(apiLogin);
+        let response = new Promise((resolve, reject) => {
+            fetch(apiLogin, {
+                method: POST,
+                headers: HEADER,
+                body: JSON.stringify(param)
+            }).then((result) => resolve(result.json())).catch((error) => reject(error));
+            setTimeout(() => {
+                reject({
+                    result: 'Fail',
+                    message: 'Network request failed, please try later!'
+                })
+            }, 10000)
+        })
+        let result = await response;
+        return result;
     } catch (error) {
-        console.log(`erroe is ${error}`);
+        return error;
     }
 }

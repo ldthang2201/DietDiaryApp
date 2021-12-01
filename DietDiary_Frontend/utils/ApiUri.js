@@ -1,9 +1,11 @@
-const domain = "http://192.168.1.26:3000";
+const DOMAIN = "http://192.168.1.7";
+const PORT= 3000;
+const REQUEST_URL = `${DOMAIN}:${PORT}`
 
 //Method: POST
-const apiCreateAccount = domain.concat('/account/create');
+const apiCreateAccount = REQUEST_URL.concat('/account/create');
 //Method: GET
-const apiLogin = domain.concat('/account/login');
+const apiLogin = REQUEST_URL.concat('/account/login');
 
 module.exports = {
     apiCreateAccount,

@@ -22,7 +22,8 @@ export default function PrimaryInput(props) {
                 placeholder = {props.placeholder}
                 placeholderTextColor = 'gray'
                 onChangeText = {props.onChangeText}
-                secureTextEntry = {props.isPassword}></TextInput>
+                secureTextEntry = {props.isPassword}
+                value = {props.value}></TextInput>
         </View>
     )
 }
