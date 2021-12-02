@@ -38,6 +38,7 @@ export const getLastCalendar = () => new Promise((resolve, reject) => {
         let lastCalendar = realm.objects(allSchemas.CALENDAR);
         if (lastCalendar.length > 0) {
             lastCalendar.sorted("date");
+            console.log(lastCalendar);
             resolve(lastCalendar[lastCalendar.length - 1]);
         } else {
             resolve(null)
@@ -92,6 +93,8 @@ export const getAllCalendars = () => new Promise((resolve, reject) => {
 
 /**
  * Update Calendar if log change by date
+ * @param {format YYYY_MM_DD : string} date 
+ * @returns 
  */
 export const updateCalendar = (date) => new Promise((resolve, reject) => {
     const EATING_TYPE = 'eating';
@@ -114,6 +117,24 @@ export const updateCalendar = (date) => new Promise((resolve, reject) => {
 
                 calendar.eatingTime = eatCount;
                 calendar.doExerciseTime = exeCount;
+            }
+        })
+        resolve();
+    }).catch(error => reject(error));
+})
+
+export const updateCalendarTimes = () => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        realm.write(() => {
+            const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.isDelete == false);
+            let result = {};
+            if (currentInfo.length > 0) {
+                result = currentInfo[0];
+                let currentCalendar = realm.objects(allSchemas.CALENDAR).find(current => current.date == getDateWithString());
+                if (currentCalendar) {
+                    currentCalendar.eatTime = result.eatingTime;
+                    currentCalendar.exerciseTime = result.doExerciseTime;
+                }
             }
         })
         resolve();

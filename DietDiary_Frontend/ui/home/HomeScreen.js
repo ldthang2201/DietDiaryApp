@@ -6,6 +6,7 @@ import Styles from "../Styles";
 import colors from "../../assets/colors";
 import { getDateWithString } from "../../utils/DatetimeUtls";
 import { getAllCalendars } from "../../databases/Calendar";
+import { StoredKeysUtls } from "../../utils/StoredKeys";
 
 const screenWidth = Dimensions.get('window').width;
 const calendarItemWidth = screenWidth / 7;
@@ -27,6 +28,7 @@ export default class HomeScreen extends BaseComponent {
             exercises: 0,
             displayCalendar: {},
             selectedDate: getDateWithString(),
+            minDateCalendar: '2021-05-10',
         }
     }
 
@@ -49,6 +51,12 @@ export default class HomeScreen extends BaseComponent {
         const selectedCalendar = this.listCalendars.find(item => item.date == this.state.selectedDate);
         // set no record
         let isNoRecord = selectedCalendar == undefined;
+
+        let minDateCalendar = await StoredKeysUtls.getString(StoredKeysUtls.key_date_using_app);
+        if (!minDateCalendar) {
+            minDateCalendar = minDateCalendar.length > 0 ? minDateCalendar : this.state.minDateCalendar;
+        }
+
         if (selectedCalendar && selectedCalendar.doExerciseTime == -1 && selectedCalendar.eatingTime == -1) {
             isNoRecord = true;
         }
@@ -56,7 +64,8 @@ export default class HomeScreen extends BaseComponent {
             displayCalendar: selectedCalendar,
             isNoRecord: isNoRecord,
             eats: selectedCalendar === undefined ? 0 : selectedCalendar.eatingTime,
-            exercises: selectedCalendar === undefined ? 0 : selectedCalendar.doExerciseTime
+            exercises: selectedCalendar === undefined ? 0 : selectedCalendar.doExerciseTime,
+            minDateCalendar,
         })
 
     }
@@ -71,7 +80,7 @@ export default class HomeScreen extends BaseComponent {
                         // Initially visible month. Default = Date()
                         current={today}
                         // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
-                        minDate={'2021-05-10'}
+                        minDate={this.state.minDateCalendar}
                         // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
                         maxDate={today}
                         // Handler which gets executed when press arrow icon left. It receive a callback can go back month
@@ -146,11 +155,11 @@ export default class HomeScreen extends BaseComponent {
                             return (displayDate)
                         }}
                     />
-                    <View style = {Styles.divider_parent}/>
+                    <View style={Styles.divider_parent} />
                     <Text style={Styles.log_home_title}>{this.state.selectedDateDisplayed}</Text>
                     {!this.state.isNoRecord &&
                         (<View style={{ marginBottom: 20 }}>
-                            <View style = {Styles.divider_parent}/>
+                            <View style={Styles.divider_parent} />
                             <View style={Styles.container_full_width_center_top}>
                                 <View style={Styles.log_home}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -164,7 +173,7 @@ export default class HomeScreen extends BaseComponent {
                                     </View>
                                 </View>
                             </View>
-                            <View style = {Styles.divider_child}/>
+                            <View style={Styles.divider_child} />
                             <View style={Styles.container_full_width_center_top}>
                                 <View style={Styles.log_home}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -178,7 +187,7 @@ export default class HomeScreen extends BaseComponent {
                                     </View>
                                 </View>
                             </View>
-                            <View style = {Styles.divider_parent}/>
+                            <View style={Styles.divider_parent} />
                         </View>)
                     }
                     {this.state.isNoRecord && (

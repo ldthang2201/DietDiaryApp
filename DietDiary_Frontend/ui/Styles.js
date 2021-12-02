@@ -43,7 +43,7 @@ export default StyleSheet.create({
 
   container_top_base: {
     flex: 1,
-    backgroundColor: colors.baseBackground,
+    backgroundColor: colors.basepopBackground,
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
@@ -406,6 +406,67 @@ export default StyleSheet.create({
     maxWidth: '50%',
     width: '40%',
     fontWeight: "600"
-  }
+  },
+
+  reminder_item_top: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    justifyContent: "space-between",
+    padding: 20,
+    paddingStart: 25,
+    paddingEnd: 25,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    width: "100%",
+  },
+
+  reminder_item_bottom: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    justifyContent: "space-between",
+    padding: 20,
+    paddingStart: 25,
+    paddingEnd: 25,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    width: "100%",
+  },
+
+  reminder_item_middle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    justifyContent: "space-between",
+    padding: 20,
+    paddingStart: 25,
+    paddingEnd: 25,
+    width: "100%",
+  },
+
+  reminder_item_only: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    justifyContent: "space-between",
+    padding: 20,
+    paddingStart: 25,
+    paddingEnd: 25,
+    borderRadius: 20,
+    width: "100%",
+  },
+
+  reminder_time: {
+    color: 'black',
+    fontSize: 30,
+  },
+
+  reminder_title: {
+    color: 'black',
+    fontSize: 20,
+    margin: 16,
+    fontWeight: '600',
+  },
 
 })

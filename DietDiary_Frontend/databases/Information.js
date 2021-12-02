@@ -11,6 +11,8 @@ export const Information = {
         fullname: "string?",
         dob: "string?",
         height: "float?",
+        eatingTime: {type: "int", default: 3},
+        doExerciseTime: {type: "int", default: 1},
         isVerify: { type: "bool", default: false },
         createAt: { type: "date", default: new Date() },
         updateAt: { type: "date", default: new Date() },

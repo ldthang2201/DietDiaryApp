@@ -24,8 +24,8 @@ export default class SettingScreen extends BaseComponent {
         logOut().then(() => this.updateState()).catch();
     }
 
-    onOpenReminder = () => {
-        this.navigation.navigate(screenUtls.ReminderScreen, { isFromSettings: true });
+    onOpenReminderSettings = () => {
+        this.navigation.navigate(screenUtls.SettingsReminderScreen, { isFromSettings: true });
     }
 
     onOpenAccountConnect = () => {
@@ -68,7 +68,7 @@ export default class SettingScreen extends BaseComponent {
     render() {
         return (
             <ScrollView>
-                <View style={Styles.container_space_between_left_base}>
+                <View>
                     <Text style={Styles.settings_group_title}>Settings information and application</Text>
                     <View style={Styles.divider_parent} />
                     <View style={Styles.settings_group_container}>
@@ -99,9 +99,9 @@ export default class SettingScreen extends BaseComponent {
 
                     <View style={{ ...Styles.divider_parent, marginTop: 40 }} />
                     <View style={Styles.settings_group_container}>
-                        <TouchableHighlight onPress={() => this.onOpenReminder()} underlayColor={colors.button_clicked}>
+                        <TouchableHighlight onPress={() => this.onOpenReminderSettings()} underlayColor={colors.button_clicked}>
                             <View style={Styles.settings_item_container}>
-                                <Text style={Styles.settings_item_title}> Alarm reminder</Text>
+                                <Text style={Styles.settings_item_title}> Settings reminder</Text>
                             </View>
                         </TouchableHighlight>
                         <View style={Styles.divider_child} />

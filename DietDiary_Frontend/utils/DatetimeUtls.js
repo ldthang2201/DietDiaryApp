@@ -52,3 +52,14 @@ export const getPreviousDate = (date) => {
  export const getNextDate = (date) => {
     return moment(date, yyyy_MM_DD).add(1, 'days').format(yyyy_MM_DD);
 }
+
+/**
+ * 
+ * @param {Date()} date 
+ * @returns 
+ */
+export const getDurationFromNow = (date) => {
+    const today = moment(new Date());
+    const calDate = moment(date)
+    return moment.duration(calDate.diff(today)).seconds();
+}

@@ -45,7 +45,7 @@ export default class SplashScreen extends BaseComponent {
                     createNewCalendar(result).then().catch(error => console.log(error));
                 })
             } else {
-                const nextDate = getNextDate(result.date);
+                let nextDate = getNextDate(result.date);
                 while (1) {
                     const today = getDateWithString();
                     // if nextDate is current date
@@ -72,28 +72,21 @@ export default class SplashScreen extends BaseComponent {
                     } else {
                         break;
                     }
+
+                    nextDate = getNextDate(nextDate);
                 }
             }
         })
     }
 
     _createCalendar = async () => {
-        const eatTime = await StoredKeysUtls.getNumber(StoredKeysUtls.key_eating_times);
-        const exeTime = await StoredKeysUtls.getNumber(StoredKeysUtls.key_do_exercise_times);
         const newCalendar = {
             date: getDateWithString(),
-            eatTime: eatTime,
-            exerciseTime: exeTime,
+            eatTime: 3,
+            exerciseTime: 1,
             weight: -1,
             preWeight : -1,
         };
-
-        if (eatTime == "-1") {
-            newCalendar.eatTime = 3;
-        }
-        if (exeTime == "-1") {
-            newCalendar.exerciseTime = 1;
-        }
 
         return newCalendar;
     }
