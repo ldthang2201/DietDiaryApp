@@ -7,7 +7,7 @@ import { Reminder } from "./Reminder";
 export const databaseOptions = {
     path: 'DietDiary.realm',
     schema: [Information, Calendar, Log, Reminder],
-    schemaVersion: 4,
+    schemaVersion: 1,
 }
 
 export default new Realm(databaseOptions);

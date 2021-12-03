@@ -52,9 +52,11 @@ export default class HomeScreen extends BaseComponent {
         // set no record
         let isNoRecord = selectedCalendar == undefined;
 
+        const currentUser = await this.getCurrentUser();
+
         let minDateCalendar = await StoredKeysUtls.getString(StoredKeysUtls.key_date_using_app);
-        if (!minDateCalendar) {
-            minDateCalendar = minDateCalendar.length > 0 ? minDateCalendar : this.state.minDateCalendar;
+        if (!currentUser) {
+            minDateCalendar = currentUser.dateUsingApp.length > 0 ? currentUser.dateUsingApp : this.state.minDateCalendar;
         }
 
         if (selectedCalendar && selectedCalendar.doExerciseTime == -1 && selectedCalendar.eatingTime == -1) {

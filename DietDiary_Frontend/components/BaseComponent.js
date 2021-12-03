@@ -34,6 +34,10 @@ export default class BaseComponent extends Component {
         return result;
     }
 
+    /**
+     * Back to previous screen
+     * @param {navigation of stack} navigation 
+     */
     backToPreviousScreen = (navigation) => {
         const popAction = StackActions.pop(1);
         navigation.dispatch(popAction);

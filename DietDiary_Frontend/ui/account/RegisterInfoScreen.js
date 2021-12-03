@@ -78,6 +78,10 @@ export default class RegisterInfoScreen extends BaseComponent {
             height: parseFloat(height),
         }
 
+        if (!this.isFromSettings) {
+            newInfo.dateUsingApp = getDateWithString();
+        }
+
         updateWeight(parseFloat(weight)).then().catch(error => console.log(error));
 
         registerInformation(newInfo).then(result => {
