@@ -1,8 +1,10 @@
 import Realm from "realm";
+import { NotificationService } from "../services/NotificationService";
 import allSchemas from "./allSchemas"
 import { databaseOptions } from "./database";
 
 // reminder constant
+const numberSlice = 6;
 const EatingOneTime = [11];
 const EatingTwoTime = [7, 12];
 const EatingThreeTime = [6, 12, 18];
@@ -42,6 +44,9 @@ export const resetEatingReminder = (times) => new Promise((resolve, reject) => {
             if (listEatingReminder) {
                 listEatingReminder.forEach(item => {
                     item.isDelete = true;
+                    if (item.isNotify) {
+                        NotificationService.cancelNotification(item.primaryKey.slice(numberSlice)).then().catch(error => console.log(error));
+                    }
                 })
             }
 
@@ -128,6 +133,9 @@ export const resetExerciseReminder = (times) => new Promise((resolve, reject) =>
             if (listExerciseReminder) {
                 listExerciseReminder.forEach(item => {
                     item.isDelete = true;
+                    if (item.isNotify) {
+                        NotificationService.cancelNotification(item.primaryKey.slice(numberSlice)).then().catch(error => console.log(error));
+                    }
                 })
             }
 
@@ -183,17 +191,80 @@ export const getAllReminders = () => new Promise((resolve, reject) => {
     }).catch((error) => reject(error));
 });
 
-export const updateReminder = (item, isNotify) => new Promise((resolve, reject) => {
+export const updateReminderNotify = (item, isNotify) => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
         realm.write(() => {
             let reminder = realm.objectForPrimaryKey(allSchemas.REMINDER, item.primaryKey);
             if (reminder) {
                 reminder.hour = item.hour;
                 reminder.minute = item.minute;
-                reminder.isNotify =isNotify;
+                reminder.isNotify = isNotify;
                 reminder.updateAt = new Date();
                 if (reminder.uploadAt) {
                     reminder.isUpdate = true;
+                }
+
+                if (isNotify) {
+                    // create new notification with new time
+                    switch (reminder.type) {
+                        case EATING_TYPE:
+                            NotificationService.createEatNotification(reminder.primaryKey.slice(numberSlice), reminder.hour, reminder.minute);
+                            break;
+                        case EXERCISE_TYPE:
+                            NotificationService.createExerciseNotification(reminder.primaryKey.slice(numberSlice), reminder.hour, reminder.minute);
+                            break;
+                        case WEIGH_TYPE:
+                            NotificationService.createWeighNotification(reminder.primaryKey.slice(numberSlice), reminder.hour, reminder.minute);
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    NotificationService.cancelNotification(reminder.primaryKey.slice(numberSlice));
+                }
+            }
+        })
+        resolve();
+    }).catch((error) => reject(error));
+});
+
+/**
+ * update time of reminder by prikaryKey
+ * @param {Primarykey: String} primaryKey 
+ * @param {Hour: int} hour 
+ * @param {Minute: int} minute 
+ * @returns 
+ */
+export const updateReminderTime = (primaryKey, hour, minute) => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        realm.write(() => {
+            let reminder = realm.objectForPrimaryKey(allSchemas.REMINDER, primaryKey);
+            if (reminder) {
+                reminder.hour = hour;
+                reminder.minute = minute;
+                reminder.updateAt = new Date();
+                if (reminder.uploadAt) {
+                    reminder.isUpdate = true;
+                }
+            }
+
+            // cancel notification with old time
+            if (reminder.isNotify) {
+                NotificationService.cancelNotification(reminder.primaryKey.slice(numberSlice));
+
+                // create new notification with new time
+                switch (reminder.type) {
+                    case EATING_TYPE:
+                        NotificationService.createEatNotification(reminder.primaryKey.slice(numberSlice), hour, minute);
+                        break;
+                    case EXERCISE_TYPE:
+                        NotificationService.createExerciseNotification(reminder.primaryKey.slice(numberSlice), hour, minute);
+                        break;
+                    case WEIGH_TYPE:
+                        NotificationService.createWeighNotification(reminder.primaryKey.slice(numberSlice), hour, minute);
+                        break;
+                    default:
+                        break;
                 }
             }
         })

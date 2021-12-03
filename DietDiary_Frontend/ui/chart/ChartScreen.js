@@ -13,69 +13,6 @@ const FIRST_WEEK = 7;
 const DISPLAY_TITLE_CHART_WEEK = ' Week Previous'
 const DISPLAY_TITLE_CHART_WEEKS = ' Weeks Previous'
 
-const lstWeight = [
-    {
-        id: 1,
-        date: '2021-10-22',
-        weight: 80,
-    },
-    {
-        id: 2,
-        date: '2021-10-21',
-        weight: 81,
-    },
-    {
-        id: 3,
-        date: '2021-10-20',
-        weight: 83,
-    },
-    {
-        id: 4,
-        date: '2021-10-19',
-        weight: 83,
-    },
-    {
-        id: 5,
-        date: '2021-10-18',
-        weight: 84,
-    },
-    {
-        id: 6,
-        date: '2021-10-17',
-        weight: 83,
-    },
-    {
-        id: 7,
-        date: '2021-10-16',
-        weight: 82,
-    },
-    {
-        id: 8,
-        date: '2021-10-15',
-        weight: 83,
-    },
-    {
-        id: 9,
-        date: '2021-10-14',
-        weight: 84,
-    },
-    {
-        id: 10,
-        date: '2021-10-13',
-        weight: 85,
-    },
-    {
-        id: 11,
-        date: '2021-10-12',
-        weight: 86,
-    },
-    {
-        id: 12,
-        date: '2021-10-11',
-        weight: 87,
-    },
-]
-
 const chartConfig = {
     backgroundGradientFrom: "#fff",
     backgroundGradientFromOpacity: 0,
@@ -94,7 +31,7 @@ export default class ChartScreen extends BaseComponent {
 
         this.state = {
             lstWeight: [],
-            displayData: this._getData(lstWeight, FIRST_WEEK),
+            displayData: this._getData([], FIRST_WEEK),
             displayedDays: FIRST_WEEK, // display number of previous from now
             lstWeightDisplay: [], // get List Weights in a week
             displayTitleChart: (FIRST_WEEK / FIRST_WEEK) + DISPLAY_TITLE_CHART_WEEK,
@@ -139,12 +76,21 @@ export default class ChartScreen extends BaseComponent {
 
         let selectedListWeightLabel = [];
         let selectedListWeightData = [];
+
+        let minValue = 200;
+        let maxValue = 0;
         sortedListWeigh.forEach(item => {
             const days = DateTimeUtls.calculateDaysFromNow(item.date);
             if ((days < numWeeks) && (days >= numWeeks - 7)) {
                 const date = new Date(item.date);
                 selectedListWeightLabel.push(date.getDate() + '/' + (date.getMonth() + 1));
                 selectedListWeightData.push(item.weight);
+                if (item.weight > maxValue) {
+                    maxValue = item.weight;
+                }
+                if (item.weight < minValue) {
+                    minValue = item.weight;
+                }
             }
         })
 
@@ -159,6 +105,14 @@ export default class ChartScreen extends BaseComponent {
                     data: selectedListWeightData,
                     color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
                     strokeWidth: 2 // optional  
+                },
+                {
+                    data: [minValue > 10 ? minValue - 10 : minValue],
+                    color: () => 'white',
+                },
+                {
+                    data: [maxValue + 10],
+                    color: () => 'white',
                 }
             ],
         };
@@ -202,9 +156,14 @@ export default class ChartScreen extends BaseComponent {
             this.setState({
                 lstWeightDisplay,
                 lstWeight: result,
+                displayData: this._getData(result, FIRST_WEEK),
                 isShow: lstWeightDisplay.length > 0,
             })
         }).catch(error => console.log(error));
+    }
+
+    componentDidMount() {
+        this._onLoadData()
     }
 
     render() {

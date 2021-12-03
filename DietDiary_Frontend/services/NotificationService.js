@@ -1,5 +1,5 @@
 import PushNotification from 'react-native-push-notification';
-import { calculateDaysFromNow, getDurationFromNow } from '../utils/DatetimeUtls';
+import { calculateDaysFromNow, getDisplayTime, getDisplayTimeByHourMin, getDurationFromNow } from '../utils/DatetimeUtls';
 
 export const NotificationService = {
     eatingChannel: "eating-channel",
@@ -31,58 +31,119 @@ export const NotificationService = {
             }
         });
     },
+    getAllNotification: () => {
+        // PushNotification.allNotification
+        PushNotification.getScheduledLocalNotifications((result) => console.log(result));
+    },
+    /**
+     * Delete channel by Id
+     * @param {*} channelId 
+     */
     deleteChannel: (channelId) => {
         PushNotification.deleteChannel(channelId);
     },
+    /**
+     * Cancel all notification
+     */
     cancelAllLocalNotifications: () => {
         PushNotification.cancelAllLocalNotifications();
     },
-    createLocalScheduleNotification: () => {
-
+    /**
+     * Cancel notification by Id
+     * @param {*} notificationId 
+     */
+    cancelNotification: (notificationId) => {
+        PushNotification.cancelLocalNotification(notificationId);
     },
-    createTestNotification: async (hour, minute) => {
+    /**
+     * Create notification for eating
+     * @param {*} hour 
+     * @param {*} minute 
+     */
+    createEatNotification: async (id, hour, minute) => {
         const today = new Date();
-        const scheduleDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hour, minute);
-        const alarmNotifData = {
-            title: "My Notification Title",
-            message: "My Notification Message",
-            channelId: "test-channel",
+        let date = today.getDate();
+        if (getDisplayTime(today) > getDisplayTimeByHourMin(hour, minute)) {
+            date++;
+        }
+
+        const scheduleDate = new Date(today.getFullYear(), today.getMonth(), date, hour, minute);
+
+        NotificationService.createChannel(NotificationService.eatingId, NotificationService.eatingChannel);
+
+        PushNotification.localNotificationSchedule({
+            id: id,
+            title: "Take your meal",
+            message: `It's ${getDisplayTimeByHourMin(hour, minute)}. Time to take and enjoy your meal!`,
+            channelId: NotificationService.eatingId,
             small_icon: "ic_launcher",
-        
-            // You can add any additional data that is important for the notification
-            // It will be added to the PendingIntent along with the rest of the bundle.
-            // e.g.
-            data: { foo: "bar" },
-        };
+            repeatType: 'day',
+            date: scheduleDate,
+            allowWhileIdle: true,
+            actions: NotificationService.eatingAction,
+        })
+    },
+    /**
+     * Create notification for do exercise
+     * @param {*} hour 
+     * @param {*} minute 
+     */
+    createExerciseNotification: (id, hour, minute) => {
+        const today = new Date();
+        let date = today.getDate();
+        console.log(getDisplayTime(today));
+        console.log(getDisplayTimeByHourMin(hour, minute));
+        console.log(getDisplayTime(today) > getDisplayTimeByHourMin(hour, minute))
+        if (getDisplayTime(today) > getDisplayTimeByHourMin(hour, minute)) {
+            date++;
+        }
 
-        PushNotification.cancelAllLocalNotifications();
+        const scheduleDate = new Date(today.getFullYear(), today.getMonth(), date, hour, minute);
 
-        PushNotification.channelExists("test-channel", (e) => console.log(e));
+        NotificationService.createChannel(NotificationService.exerciseId, NotificationService.exerciseChannel);
 
-        PushNotification.localNotificationSchedule(
-            {
-                ...alarmNotifData,
-                date: scheduleDate,
-                repeatType: 'date'
-            }
-        )
+        PushNotification.localNotificationSchedule({
+            id: id,
+            title: "Do Exercise",
+            message: `It's ${getDisplayTimeByHourMin(hour, minute)}. Time to do exercise and improve your health`,
+            channelId: NotificationService.exerciseId,
+            small_icon: "ic_launcher",
+            repeatType: 'day',
+            date: scheduleDate,
+            allowWhileIdle: true,
+            actions: NotificationService.exerciseAction,
+        })
+    },
+    /**
+     * Create notification for weighing
+     * @param {*} hour 
+     * @param {*} minute 
+     */
+    createWeighNotification: (id, hour, minute) => {
+        const today = new Date();
+        let date = today.getDate();
+        if (getDisplayTime(today) > getDisplayTimeByHourMin(hour, minute)) {
+            date++;
+        }
 
-        // PushNotification.localNotification(alarmNotifData)
+        const scheduleDate = new Date(today.getFullYear(), today.getMonth(), date, hour, minute);
 
-        // if (getDurationFromNow > 0) {
-        //     PushNotification.localNotificationSchedule(
-        //         {
-        //             ...alarmNotifData,
-        //             date: scheduleDate,
-        //             repeatType: 'minute'
-        //         }
-        //     )
-        // } else {
-        //     PushNotification.localNotificationSchedule({
-        //         ...alarmNotifData,
-        //         date: today,
-        //         repeatType: 'minute'
-        //     })
-        // }
-    }
+        if (today > scheduleDate) {
+            scheduleDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, hour, minute);
+        }
+
+        NotificationService.createChannel(NotificationService.weightId, NotificationService.weightChannel);
+
+        PushNotification.localNotificationSchedule({
+            id: id,
+            title: "Weighing time",
+            message: `How much do you weigh today? Weighing now`,
+            channelId: NotificationService.weightId,
+            small_icon: "ic_launcher",
+            repeatType: 'day',
+            date: scheduleDate,
+            allowWhileIdle: true,
+        })
+    },
+    
 }

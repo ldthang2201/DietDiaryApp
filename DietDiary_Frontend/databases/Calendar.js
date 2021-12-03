@@ -38,7 +38,6 @@ export const getLastCalendar = () => new Promise((resolve, reject) => {
         let lastCalendar = realm.objects(allSchemas.CALENDAR);
         if (lastCalendar.length > 0) {
             lastCalendar.sorted("date");
-            console.log(lastCalendar);
             resolve(lastCalendar[lastCalendar.length - 1]);
         } else {
             resolve(null)

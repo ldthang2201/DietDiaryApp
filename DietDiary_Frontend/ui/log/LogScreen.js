@@ -492,15 +492,3 @@ export default class LogScreen extends BaseComponent {
         )
     }
 }
-
-const renderContent = () => (
-    <View
-        style={{
-            backgroundColor: 'gray',
-            padding: 16,
-            height: 450,
-        }}
-    >
-        <Text>Swipe down to close</Text>
-    </View>
-);

@@ -1,12 +1,14 @@
 import React, { Component } from "react";
-import { EventSubscriptionVendor, ScrollView, Switch, Text, View } from "react-native";
+import { Alert, EventSubscriptionVendor, ScrollView, Switch, Text, View } from "react-native";
 import BaseComponent from "../../components/BaseComponent";
 import Styles from "../Styles";
 import PrimaryButton from "../../components/PrimaryButton"
 import PushNotification from "react-native-push-notification";
 import AppLoader from "../../components/AppLoader";
 import { NotificationService } from "../../services/NotificationService";
-import { EATING_TYPE, EXERCISE_TYPE, getAllReminders, updateReminder, WEIGH_TYPE } from "../../databases/Reminder";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { EATING_TYPE, EXERCISE_TYPE, getAllReminders, updateReminderNotify, updateReminderTime, WEIGH_TYPE } from "../../databases/Reminder";
+import { getDisplayTimeByHourMin } from "../../utils/DatetimeUtls";
 
 
 // set the fire date for 1 second from now
@@ -31,26 +33,71 @@ export default class ReminderScreen extends Component {
 
         this.params = props.route.params;
 
+        this.listAllReminder = [];
+
         this.state = {
+            isShowTimePicker: false,
+            selectedReminderId: "",
+            selectedTime: new Date(), // Time show on time picker
             listEatingReminder: [],
             listExerciseReminder: [],
             listWeighReminder: [],
         }
+
+        NotificationService.getAllNotification();
     }
 
-    // pushNotification = async () => {
-    //     NotificationService.createTestNotification(10, 6);
-    //     // PushNotification.localNotification({
-    //     //     channelId: "test-channel",
-    //     //     title: "My Notification Title", // (optional)
-    //     //     message: "My Notification Message", // (required)
-    //     // });
-    // }
     _onSwitchReminder = (item) => {
         const isNotify = !item.isNotify;
-        updateReminder(item, isNotify).then(() => {
+        updateReminderNotify(item, isNotify).then(() => {
             this._reloadData();
         }).catch(error => console.log(error))
+    }
+
+    _onTimePress = (item) => {
+        const today = new Date();
+        this.setState({
+            selectedReminderId: String(item.primaryKey),
+            selectedTime: new Date(today.getFullYear(), today.getMonth(), today.getDate(), item.hour, item.minute),
+            isShowTimePicker: true,
+        })
+    }
+
+    _onCancel = () => {
+        this.setState({ isShowTimePicker: false });
+    }
+
+    _onSelectTimePicker = (event, selectedTime) => {
+        if (selectedTime === undefined) {
+            this._onCancel();
+            return;
+        }
+        const selectedDate = new Date(selectedTime);
+        const hour = selectedDate.getHours();
+        const minute = selectedDate.getMinutes();
+
+        const existTime = this.listAllReminder.find(item => item.primaryKey != this.state.selectedReminderId
+            && item.hour == hour && item.minute == minute);
+        if (existTime) {
+            Alert.alert(
+                'Information',
+                'You can\'t set time same another reminder. Please try another time',
+                [
+                    {
+                        text: 'OK',
+                        style: 'cancel'
+                    },
+                ],
+                { cancelable: true }
+            );
+            this._onCancel();
+            return;
+        }
+
+        updateReminderTime(this.state.selectedReminderId, hour, minute)
+            .then(() => this._reloadData()).catch(error => console.log(error));
+
+        this._onCancel();
     }
 
     _reloadData = () => {
@@ -59,6 +106,8 @@ export default class ReminderScreen extends Component {
                 let listEatingReminder = [];
                 let listExerciseReminder = [];
                 let listWeighReminder = [];
+
+                this.listAllReminder = result;
                 result.forEach(item => {
                     switch (item.type) {
                         case EATING_TYPE:
@@ -76,9 +125,9 @@ export default class ReminderScreen extends Component {
                 });
 
                 this.setState({
-                    listEatingReminder: listEatingReminder.sort((a,b) => a.hour > b.hour),
-                    listExerciseReminder: listExerciseReminder.sort((a,b) => a.hour > b.hour),
-                    listWeighReminder: listWeighReminder.sort((a,b) => a.hour > b.hour),
+                    listEatingReminder: listEatingReminder.sort((a, b) => a.hour > b.hour),
+                    listExerciseReminder: listExerciseReminder.sort((a, b) => a.hour > b.hour),
+                    listWeighReminder: listWeighReminder.sort((a, b) => a.hour > b.hour),
                 })
 
             }
@@ -100,13 +149,14 @@ export default class ReminderScreen extends Component {
                         this.state.listEatingReminder.map((value, index) => {
                             let styleContainer = Styles.reminder_item_only;
                             let isDivider = false;
-                            if (listReminder.length > 1) {
+                            let length = this.state.listEatingReminder.length;
+                            if (length > 1) {
                                 switch (index) {
                                     case 0:
                                         styleContainer = Styles.reminder_item_top;
                                         isDivider = true;
                                         break;
-                                    case (listReminder.length - 1):
+                                    case (length - 1):
                                         styleContainer = Styles.reminder_item_bottom;
                                         break;
                                     default:
@@ -118,12 +168,12 @@ export default class ReminderScreen extends Component {
                             return (
                                 <View style={{ flexDirection: 'column', width: '100%' }} key={index}>
                                     <View style={styleContainer}>
-                                        <Text style={Styles.reminder_time}>10:05</Text>
-                                        <Switch 
-                                            onValueChange = {() => {
+                                        <Text style={Styles.reminder_time} onPress={() => this._onTimePress(value)}>{getDisplayTimeByHourMin(value.hour, value.minute)}</Text>
+                                        <Switch
+                                            onValueChange={() => {
                                                 this._onSwitchReminder(value);
                                             }}
-                                            value = {value.isNotify}/>
+                                            value={value.isNotify} />
                                     </View>
                                     {isDivider && <View style={Styles.divider_child} />}
                                 </View>
@@ -137,13 +187,14 @@ export default class ReminderScreen extends Component {
                         this.state.listExerciseReminder.map((value, index) => {
                             let styleContainer = Styles.reminder_item_only;
                             let isDivider = false;
-                            if (listReminder.length > 1) {
+                            const length = this.state.listExerciseReminder.length;
+                            if (length > 1) {
                                 switch (index) {
                                     case 0:
                                         styleContainer = Styles.reminder_item_top;
                                         isDivider = true;
                                         break;
-                                    case (listReminder.length - 1):
+                                    case (length - 1):
                                         styleContainer = Styles.reminder_item_bottom;
                                         break;
                                     default:
@@ -155,8 +206,12 @@ export default class ReminderScreen extends Component {
                             return (
                                 <View style={{ flexDirection: 'column', width: '100%' }} key={index}>
                                     <View style={styleContainer}>
-                                        <Text style={Styles.reminder_time}>10:05</Text>
-                                        <Switch />
+                                        <Text style={Styles.reminder_time} onPress={() => this._onTimePress(value)}>{getDisplayTimeByHourMin(value.hour, value.minute)}</Text>
+                                        <Switch
+                                            onValueChange={() => {
+                                                this._onSwitchReminder(value);
+                                            }}
+                                            value={value.isNotify} />
                                     </View>
                                     {isDivider && <View style={Styles.divider_child} />}
                                 </View>
@@ -171,36 +226,30 @@ export default class ReminderScreen extends Component {
                             return (
                                 <View style={{ flexDirection: 'column', width: '100%' }} key={index}>
                                     <View style={Styles.reminder_item_only}>
-                                        <Text style={Styles.reminder_time}>10:05</Text>
-                                        <Switch />
+                                        <Text style={Styles.reminder_time} onPress={() => this._onTimePress(value)}>{getDisplayTimeByHourMin(value.hour, value.minute)}</Text>
+                                        <Switch
+                                            onValueChange={() => {
+                                                this._onSwitchReminder(value);
+                                            }}
+                                            value={value.isNotify} />
                                     </View>
                                 </View>
                             )
                         })
                     }
+                    {this.state.isShowTimePicker &&
+                        <DateTimePicker
+                            value={this.state.selectedTime}
+                            mode={'time'}
+                            is24Hour={true}
+                            display="default"
+                            onChange={this._onSelectTimePicker}
+                            onTouchCancel={() => this._onCancel()} />}
+                    <PrimaryButton title="Cancel all" onPress={() => {
+                        NotificationService.cancelAllLocalNotifications();
+                    }} />
                 </View>
             </ScrollView>
         )
     }
 }
-
-const listReminder = [
-    {
-        primaryKey: 1,
-        hour: 10,
-        minute: 5,
-        isNorify: true
-    },
-    {
-        primaryKey: 2,
-        hour: 10,
-        minute: 5,
-        isNorify: true
-    },
-    {
-        primaryKey: 3,
-        hour: 10,
-        minute: 5,
-        isNorify: true
-    },
-]

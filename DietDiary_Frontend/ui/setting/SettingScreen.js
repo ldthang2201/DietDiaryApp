@@ -98,16 +98,29 @@ export default class SettingScreen extends BaseComponent {
                     <View style={Styles.divider_parent} />
 
                     <View style={{ ...Styles.divider_parent, marginTop: 40 }} />
+                    <TouchableHighlight onPress={() => this.onOpenReminderSettings()} underlayColor={colors.button_clicked}>
+                        <View style={Styles.settings_item_container}>
+                            <Text style={Styles.settings_item_title}> Settings reminder</Text>
+                        </View>
+                    </TouchableHighlight>
+                    <View style={Styles.divider_parent} />
+                    <View style={{ ...Styles.divider_parent, marginTop: 40 }} />
                     <View style={Styles.settings_group_container}>
-                        <TouchableHighlight onPress={() => this.onOpenReminderSettings()} underlayColor={colors.button_clicked}>
+                        <TouchableHighlight onPress={() => console.log('you clicked')} underlayColor={colors.button_clicked}>
                             <View style={Styles.settings_item_container}>
-                                <Text style={Styles.settings_item_title}> Settings reminder</Text>
+                                <Text style={Styles.settings_item_title}> Privacy of application</Text>
                             </View>
                         </TouchableHighlight>
                         <View style={Styles.divider_child} />
                         <TouchableHighlight onPress={() => console.log('you clicked')} underlayColor={colors.button_clicked}>
                             <View style={Styles.settings_item_container}>
-                                <Text style={Styles.settings_item_title}> Settings you weight</Text>
+                                <Text style={Styles.settings_item_title}> Contact</Text>
+                            </View>
+                        </TouchableHighlight>
+                        <View style={Styles.divider_child} />
+                        <TouchableHighlight onPress={() => console.log('you clicked')} underlayColor={colors.button_clicked}>
+                            <View style={Styles.settings_item_container}>
+                                <Text style={Styles.settings_item_title}> About us</Text>
                             </View>
                         </TouchableHighlight>
                     </View>

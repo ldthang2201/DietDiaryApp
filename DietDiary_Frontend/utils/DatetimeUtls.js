@@ -36,6 +36,15 @@ export const getDisplayTime = (date) => {
 }
 
 /**
+ * Get display time with format hh:mm
+ * @param {int} hour 
+ * @param {int} min 
+ */
+export const getDisplayTimeByHourMin = (hour, min) => {
+    return ("0" + hour).slice(-2) + ':' + ("0" + min).slice(-2);
+}
+
+/**
  * Get previous date 
  * @param {"yyyy_MM_DD"} date 
  * @returns "yyyy_MM_DD"
@@ -54,7 +63,7 @@ export const getPreviousDate = (date) => {
 }
 
 /**
- * 
+ * Get duration with second, minus if date in past
  * @param {Date()} date 
  * @returns 
  */
