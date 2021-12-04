@@ -14,6 +14,8 @@ const EatingSixTime = [6, 8, 11, 14, 16, 18];
 const ExerciseOneTime = [17];
 const ExerciseTwoTime = [5, 17];
 const ExerciseThreeTime = [5, 17, 20];
+const weighHour = 5;
+const weighMinute = 30;
 
 export const EATING_TYPE = "eat";
 export const EXERCISE_TYPE = "exercise";
@@ -176,6 +178,32 @@ export const resetExerciseReminder = (times) => new Promise((resolve, reject) =>
                 default:
                     break;
             }
+        });
+        resolve();
+    }).catch(error => reject(error));
+})
+
+export const resetWeighReminder = () => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        realm.write(() => {
+            // soft delete all reminder of eating
+            const listWeighReminder = realm.objects(allSchemas.REMINDER).filter(item => item.isDelete == false && item.type == WEIGH_TYPE);
+            if (listWeighReminder) {
+                listWeighReminder.forEach(item => {
+                    item.isDelete = true;
+                    if (item.isNotify) {
+                        NotificationService.cancelNotification(item.primaryKey.slice(numberSlice)).then().catch(error => console.log(error));
+                    }
+                })
+            }
+
+            const newReminder = {
+                primaryKey: `${new Date().getTime().toString()}${weighHour}`,
+                hour: weighHour,
+                minute: weighMinute,
+                type: WEIGH_TYPE,
+            };
+            realm.create(allSchemas.REMINDER, newReminder);
         });
         resolve();
     }).catch(error => reject(error));

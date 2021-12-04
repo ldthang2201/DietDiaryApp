@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import bcrypt = require("bcrypt");
 import { comparePassword, encodePassword } from 'src/utls/bcrypt.utls';
-import { Weight } from 'src/weights/weight';
+import { Calendar } from 'src/models/calendar.model';
 
 @Injectable()
 export class AccountsService {
@@ -53,52 +53,37 @@ export class AccountsService {
         return existAccount;
     }
 
-    async setWeights(objectId: string, weights: [Weight]) {
+    async getCalendars(objectId: string) {
         const existAccount = await this.accountModel.findById(objectId);
         if (existAccount == null) {
-            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
-        }
-        let newWeights = weights;
-        existAccount.weights.forEach(item => {
-            const existItem = weights.find(e => e._id == item._id);
-            if (existItem == null) {
-                newWeights.push(item);
+            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND}, HttpStatus.NOT_FOUND);
+        };
+
+        return existAccount.listCalendars;
+    }
+
+    async setCalendars(objectId: string, listCalendars: [Calendar]) {
+        let existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND}, HttpStatus.NOT_FOUND);
+        };
+
+        let newCalendars = listCalendars;
+        existAccount.listCalendars.forEach(item => {
+            const existIndex = newCalendars.findIndex(e => e.primaryKey == item.primaryKey);
+
+        })
+        newCalendars.forEach(item => {
+            const existIndex = existAccount.listCalendars.findIndex(e => e.primaryKey == item.primaryKey);
+
+            if (existIndex != -1) {
+                existAccount.listCalendars[existIndex] = item;
+            } else {
+                existAccount.listCalendars.push(item);
             }
         })
-
-        existAccount.weights = newWeights;
 
         return await existAccount.save();
     }
 
-    async getWeights(objectId: string) {
-        const existAccount = await this.accountModel.findById(objectId);
-        if (existAccount == null) {
-            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
-        }
-
-        return existAccount.weights;
-    }
-
-    // getAccounts() {
-    //     return new Date().toString();
-    // }
-
-    // getAccount(username: string) {
-    //     const account = this.accounts.find(acc => acc.username === username);
-    //     if (!account) {
-    //         throw new NotFoundException('Could not find account');
-    //     }
-    //     return {...account};
-    // }
-
-    // updatePassword(username: string, email: string, password: string) {
-    //     console.log(username)
-    //     const account = this.accounts.find(acc => acc.username === username);
-    //     if (!account) {
-    //         throw new NotFoundException('Could not find account');
-    //     }
-    //     account.password = password;
-    //     return {...account};
-    // }
 }

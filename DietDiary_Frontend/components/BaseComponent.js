@@ -43,6 +43,18 @@ export default class BaseComponent extends Component {
         navigation.dispatch(popAction);
     }
 
+    /**
+     * Open new screen and finish all previous screen
+     * @param {navigation of stack} navigation 
+     * @param {screen name : string} screenName 
+     */
+    finishAllAndOpenScreen = (navigation, screenName) => {
+        navigation.reset({
+            index: 0,
+            routes: [{ name: screenName }],
+        });
+    }
+
     dismissKeyboard = () => {
         Keyboard.dismiss()
     }

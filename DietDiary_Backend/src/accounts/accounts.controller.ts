@@ -1,8 +1,8 @@
 import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Patch, Post } from '@nestjs/common';
-import { Weight } from 'src/weights/weight';
+import { Calendar } from 'src/models/calendar.model';
 import { AccountsService } from './accounts.service';
 
-@Controller('account')
+@Controller('dietdiary')
 export class AccountsController {
     constructor(private readonly accountService: AccountsService) { }
 
@@ -34,48 +34,60 @@ export class AccountsController {
         if (username === undefined || password === undefined) {
             throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
         }
-        const getAccount = await this.accountService.login(username, password);
+        let getAccount = await this.accountService.login(username, password);
+
+        let result = getAccount.toJSON();
+
+        delete result.password;
+        delete result.listCalendars;
+        delete result.listLogs;
+        delete result.listReminders;
         return {
             result: 'OK',
             message: 'Login successfully',
-            accounts: getAccount,
+            accounts: result,
             statusCode: 200
         }
     }
 
-    @Get('/test')
+    @Get('/getCalendars/:id')
     @HttpCode(200)
-    async setWeightTest(
-        @Body('id') id: string,
-        @Body('weights') listWeights : [Weight]
-    ) {
-        // const a = await this.accountService.setWeights("619aff770ffe56bd9340c10b", []);
-    }
-
-    @Get('/getWeights/:id')
-    @HttpCode(200)
-    async getWeight(
+    async getCalendars(
         @Param('id') id: string
     ) {
-        const listWeight = await this.accountService.getWeights(id);
+        if (id == null || id == undefined) {
+            throw new HttpException('required id param', HttpStatus.BAD_REQUEST);
+        }
+        const listCalendars = await this.accountService.getCalendars(id);
         return {
             result: 'OK',
-            message: 'Login successfully',
-            weights: listWeight,
+            message: 'Get successfully',
+            listCalendars: listCalendars,
             statusCode: 200
         }
     }
 
-    @Post('/setWeights')
+    @Post('/setCalendars')
     @HttpCode(200)
-    async setWeight(
-        @Body('_id') id: string,
-        @Body('weights') listWeights : [Weight]
+    async setCalendars(
+        @Body('id') id : string,
+        @Body('listCalendars') listCalendars: [Calendar]
     ) {
-        const a = await this.accountService.setWeights(id, listWeights);
-        console.log(id);
-        console.log(listWeights);
-        console.log(a);
+        if (id == null || id == undefined) {
+            throw new HttpException('id is required', HttpStatus.BAD_REQUEST);
+        }
+
+        if (listCalendars == null || listCalendars == undefined) {
+            throw new HttpException('listCalendars is required', HttpStatus.BAD_REQUEST);
+        }
+
+        await this.accountService.setCalendars(id, listCalendars)
+
+        return {
+            result: 'OK',
+            message: 'Set calendars successfully',
+            statusCode: 200
+        }
     }
 
 }

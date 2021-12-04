@@ -9,6 +9,7 @@ import { registerInformation } from "../../databases/Information";
 import { StoredKeysUtls } from "../../utils/StoredKeys";
 import { getTodayCalendar, updateWeight } from "../../databases/Calendar";
 import { getDateWithString } from "../../utils/DatetimeUtls";
+import { resetEatingReminder, resetExerciseReminder, resetWeighReminder } from "../../databases/Reminder";
 const screenUtils = require('../../utils/ScreenNames')
 const screenWidth = Dimensions.get('window').width;
 const primaryButtonWidth = screenWidth * 0.85;
@@ -93,10 +94,12 @@ export default class RegisterInfoScreen extends BaseComponent {
                 this.backToPreviousScreen(navigation);
             } else {
                 // remove all previous creens
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Home' }],
-                });
+                this.finishAllAndOpenScreen(navigation, screenUtils.HomeApp);
+
+                //create default reminder
+                resetEatingReminder(3);
+                resetExerciseReminder(1);
+                resetWeighReminder();
             }
 
             // set flag
