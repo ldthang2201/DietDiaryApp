@@ -36,6 +36,10 @@ export default class SettingScreen extends BaseComponent {
         this.navigation.navigate(screenUtls.RegisterInfoScreen, { isFromSettings: true });
     }
 
+    onOpenSyncScreen = () => {
+        this.navigation.navigate(screenUtls.SyncScreen, { isFromSettings: true });
+    }
+
     _onResume = this.props.navigation.addListener('focus', () => {
         this.updateState();
     });
@@ -88,11 +92,19 @@ export default class SettingScreen extends BaseComponent {
                         }
                         {
                             this.state.isLogin &&
-                            <TouchableHighlight onPress={() => this.onLogOut()} underlayColor={colors.button_clicked}>
-                                <View style={Styles.settings_item_container}>
-                                    <Text style={Styles.settings_item_title}>{this.state.email}</Text>
-                                </View>
-                            </TouchableHighlight>
+                            <View>
+                                <TouchableHighlight onPress={() => this.onLogOut()} underlayColor={colors.button_clicked}>
+                                    <View style={Styles.settings_item_container}>
+                                        <Text style={Styles.settings_item_title}>{this.state.email}</Text>
+                                    </View>
+                                </TouchableHighlight>
+                                <View style={Styles.divider_child} />
+                                <TouchableHighlight onPress={() => this.onOpenSyncScreen()} underlayColor={colors.button_clicked}>
+                                    <View style={Styles.settings_item_container}>
+                                        <Text style={Styles.settings_item_title}>Data synchronization</Text>
+                                    </View>
+                                </TouchableHighlight>
+                            </View>
                         }
                     </View>
                     <View style={Styles.divider_parent} />

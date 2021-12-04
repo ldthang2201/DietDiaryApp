@@ -6,12 +6,14 @@ import { Model } from 'mongoose';
 import bcrypt = require("bcrypt");
 import { comparePassword, encodePassword } from 'src/utls/bcrypt.utls';
 import { Calendar } from 'src/models/calendar.model';
+import { Log } from 'src/models/log.model';
+import { Reminder } from 'src/models/reminder.model';
 
 @Injectable()
 export class AccountsService {
     accounts: Account[] = [];
 
-    constructor(@InjectModel('Account') private readonly accountModel: Model<Account>) {}
+    constructor(@InjectModel('Account') private readonly accountModel: Model<Account>) { }
 
     async createAccount(username: string, email: string, password: string) {
 
@@ -22,16 +24,16 @@ export class AccountsService {
             email: email,
             password: hashPassword,
         });
-        const existAccount = await this.accountModel.findOne({username: username});
+        const existAccount = await this.accountModel.findOne({ username: username });
 
-        const existEmail = await this.accountModel.findOne({email: email});
+        const existEmail = await this.accountModel.findOne({ email: email });
 
         if (existAccount != null) {
-            throw new HttpException({result: 'Fail', message: 'Account Existed', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
+            throw new HttpException({ result: 'Fail', message: 'Account Existed', statusCode: HttpStatus.CONFLICT }, HttpStatus.CONFLICT);
         }
 
         if (existEmail != null) {
-            throw new HttpException({result: 'Fail', message: 'Email had been registered', statusCode: HttpStatus.CONFLICT}, HttpStatus.CONFLICT);
+            throw new HttpException({ result: 'Fail', message: 'Email had been registered', statusCode: HttpStatus.CONFLICT }, HttpStatus.CONFLICT);
         }
 
         const result = await newAccount.save();
@@ -41,13 +43,13 @@ export class AccountsService {
     async login(username: string, password: string) {
         const hashPassword = await encodePassword(password);
 
-        const existAccount = await this.accountModel.findOne({username: username} || {email: username});
+        const existAccount = await this.accountModel.findOne({ username: username } || { email: username });
         if (existAccount == null) {
-            throw new HttpException({result: 'Fail', message: 'Username or password is incorrect', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+            throw new HttpException({ result: 'Fail', message: 'Username or password is incorrect', statusCode: HttpStatus.BAD_REQUEST }, HttpStatus.BAD_REQUEST);
         }
 
         if (!comparePassword(password, existAccount.password)) {
-            throw new HttpException({result: 'Fail', message: 'Password is not match', statusCode: HttpStatus.BAD_REQUEST}, HttpStatus.BAD_REQUEST);
+            throw new HttpException({ result: 'Fail', message: 'Password is not match', statusCode: HttpStatus.BAD_REQUEST }, HttpStatus.BAD_REQUEST);
         }
 
         return existAccount;
@@ -56,7 +58,7 @@ export class AccountsService {
     async getCalendars(objectId: string) {
         const existAccount = await this.accountModel.findById(objectId);
         if (existAccount == null) {
-            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND}, HttpStatus.NOT_FOUND);
+            throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
         };
 
         return existAccount.listCalendars;
@@ -65,23 +67,111 @@ export class AccountsService {
     async setCalendars(objectId: string, listCalendars: [Calendar]) {
         let existAccount = await this.accountModel.findById(objectId);
         if (existAccount == null) {
-            throw new HttpException({result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND}, HttpStatus.NOT_FOUND);
+            throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
         };
 
         let newCalendars = listCalendars;
-        existAccount.listCalendars.forEach(item => {
-            const existIndex = newCalendars.findIndex(e => e.primaryKey == item.primaryKey);
 
-        })
         newCalendars.forEach(item => {
             const existIndex = existAccount.listCalendars.findIndex(e => e.primaryKey == item.primaryKey);
 
             if (existIndex != -1) {
-                existAccount.listCalendars[existIndex] = item;
+                if (existAccount.listCalendars[existIndex].updateAt < item.updateAt) {
+                    existAccount.listCalendars[existIndex] = item;
+                }
             } else {
                 existAccount.listCalendars.push(item);
             }
         })
+
+        return await existAccount.save();
+    }
+
+    async getLogs(objectId: string) {
+        const existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
+        };
+
+        return existAccount.listLogs;
+    }
+
+    async setLogs(objectId: string, listLogs: [Log]) {
+        let existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
+        };
+
+        let newLogs = listLogs;
+
+        newLogs.forEach(item => {
+            const existIndex = existAccount.listCalendars.findIndex(e => e.primaryKey == item.primaryKey);
+
+            if (existIndex != -1) {
+                if (existAccount.listLogs[existIndex].updateAt < item.updateAt) {
+                    existAccount.listLogs[existIndex] = item;
+                }
+            } else {
+                existAccount.listLogs.push(item);
+            }
+        })
+
+        return await existAccount.save();
+    }
+
+    async getReminders(objectId: string) {
+        const existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
+        };
+
+        return existAccount.listReminders;
+    }
+
+    async setReminders(objectId: string, listReminders: [Reminder]) {
+        let existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
+        };
+
+        let newReminders = listReminders;
+
+        newReminders.forEach(item => {
+            const existIndex = existAccount.listCalendars.findIndex(e => e.primaryKey == item.primaryKey);
+
+            if (existIndex != -1) {
+                if (existAccount.listReminders[existIndex].updateAt < item.updateAt) {
+                    existAccount.listReminders[existIndex] = item;
+                }
+            } else {
+                existAccount.listReminders.push(item);
+            }
+        })
+
+        return await existAccount.save();
+    }
+
+    async getInformation(objectId: string) {
+        const existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
+        };
+
+        return existAccount;
+    }
+
+    async setInformation(objectId: string, information: Account) {
+        let existAccount = await this.accountModel.findById(objectId);
+        if (existAccount == null) {
+            throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
+        };
+
+        if (existAccount.updateAt < information.updateAt) {
+            existAccount.fullname = information.fullname;
+            existAccount.dob = information.dob;
+            existAccount.height = information.height;
+            existAccount.updateAt = new Date();
+        }
 
         return await existAccount.save();
     }

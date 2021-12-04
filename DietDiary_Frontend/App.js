@@ -22,6 +22,7 @@ import ReminderScreen from './ui/notification/ReminderScreen';
 import MenuScreen from './ui/menu/MenuScreen';
 import FoodsScreen from './ui/foods/FoodsScreen';
 import SettingsReminderScreen from './ui/setting/SettingsReminnderScreen';
+import SyncScreen from './ui/account/SyncScreen';
 
 const screenUtils = require('./utils/ScreenNames')
 const Stack = createNativeStackNavigator();
@@ -80,6 +81,9 @@ const App = () => {
           <Stack.Screen name={screenUtils.SettingsReminderScreen}
             component={SettingsReminderScreen}
             options={{ title: 'Settings Reminder' }} />
+            <Stack.Screen name={screenUtils.SyncScreen}
+            component={SyncScreen}
+            options={{ title: 'Data synchronization' }} />
         </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>

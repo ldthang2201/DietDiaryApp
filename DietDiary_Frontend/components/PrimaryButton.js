@@ -7,7 +7,7 @@ const screenWidth = Dimensions.get('window').width;
 const primaryButtonWidth = screenWidth * 0.85;
 
 // props: title, onPress, type
-export default function PrimaryButton (props) {
+export default function PrimaryButton(props) {
     return (
         <TouchableHighlight
             style={{ borderRadius: 15, margin: 10, width: primaryButtonWidth }}

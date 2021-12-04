@@ -15,6 +15,7 @@ export const AccountSchema = new mongoose.Schema({
     listCalendars: {type: Array},
     listLogs: {type: Array},
     listReminders: {type: Array},
+    dateUsingApp: { type: String},
     isVerify: { type: Boolean, default: false},
     createAt: { type: Date, default: new Date()},
     updateAt: { type: Date, default: new Date()},
@@ -34,6 +35,7 @@ export interface Account {
     listCalendars: [Calendar];
     listLogs: [Log];
     listReminders: [Reminder];
+    dateUsingApp: string;
     isVerify: boolean;
     createAt: Date;
     updateAt: Date;

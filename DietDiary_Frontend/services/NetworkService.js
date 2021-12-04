@@ -1,4 +1,4 @@
-import { apiCreateAccount, apiLogin } from "../utils/ApiUri";
+import { apiCreateAccount, apiGetInformation, apiLogin } from "../utils/ApiUri";
 
 const HEADER = {
     'Accept': 'application/json',
@@ -46,6 +46,27 @@ export async function Login(username, password) {
                 method: POST,
                 headers: HEADER,
                 body: JSON.stringify(param)
+            }).then((result) => resolve(result.json())).catch((error) => reject(error));
+            setTimeout(() => {
+                reject({
+                    result: 'Fail',
+                    message: 'Network request failed, please try later!'
+                })
+            }, 10000)
+        })
+        let result = await response;
+        return result;
+    } catch (error) {
+        return error;
+    }
+}
+
+export async function getInformation (id) {
+    try {
+        let response = new Promise((resolve, reject) => {
+            fetch(`${apiGetInformation}/${id}`, {
+                method: GET,
+                headers: HEADER,
             }).then((result) => resolve(result.json())).catch((error) => reject(error));
             setTimeout(() => {
                 reject({

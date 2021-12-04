@@ -13,6 +13,7 @@ const HomeApp = "Home"
 const MenuScreen = "MenuScreen"
 const FoodsScreen = "FoodsScreen"
 const SettingsReminderScreen = "SettingsReminderScreen"
+const SyncScreen = "SyncScreen"
 
 module.exports = {
     SplashScreen,
@@ -30,4 +31,5 @@ module.exports = {
     MenuScreen,
     FoodsScreen,
     SettingsReminderScreen,
+    SyncScreen,
 }
