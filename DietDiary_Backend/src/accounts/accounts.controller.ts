@@ -1,9 +1,10 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
 import { Calendar } from 'src/models/calendar.model';
 import { Log } from 'src/models/log.model';
 import { Reminder } from 'src/models/reminder.model';
 import { Account } from './account';
 import { AccountsService } from './accounts.service';
+import { isValidObjectId } from 'mongoose';
 
 @Controller('dietdiary')
 export class AccountsController {
@@ -58,7 +59,7 @@ export class AccountsController {
     async getCalendars(
         @Param('id') id: string
     ) {
-        if (id == null || id == undefined) {
+        if (id == null || id == undefined || !isValidObjectId(id)) {
             throw new HttpException('required id param', HttpStatus.BAD_REQUEST);
         }
         const listCalendars = await this.accountService.getCalendars(id);
@@ -80,7 +81,7 @@ export class AccountsController {
             throw new HttpException('id is required', HttpStatus.BAD_REQUEST);
         }
 
-        if (listCalendars == null || listCalendars == undefined) {
+        if (listCalendars == null || listCalendars == undefined || !isValidObjectId(id)) {
             throw new HttpException('listCalendars is required', HttpStatus.BAD_REQUEST);
         }
 
@@ -98,7 +99,7 @@ export class AccountsController {
     async getLogs(
         @Param('id') id: string
     ) {
-        if (id == null || id == undefined) {
+        if (id == null || id == undefined || !isValidObjectId(id)) {
             throw new HttpException('required id param', HttpStatus.BAD_REQUEST);
         }
         const listLogs = await this.accountService.getLogs(id);
@@ -116,7 +117,7 @@ export class AccountsController {
         @Body('id') id : string,
         @Body('listLogs') listLogs: [Log]
     ) {
-        if (id == null || id == undefined) {
+        if (id == null || id == undefined || !isValidObjectId(id)) {
             throw new HttpException('id is required', HttpStatus.BAD_REQUEST);
         }
 
@@ -138,7 +139,7 @@ export class AccountsController {
     async getReminders(
         @Param('id') id: string
     ) {
-        if (id == null || id == undefined) {
+        if (id == null || id == undefined || !isValidObjectId(id)) {
             throw new HttpException('required id param', HttpStatus.BAD_REQUEST);
         }
         const listReminders = await this.accountService.getReminders(id);
@@ -156,7 +157,7 @@ export class AccountsController {
         @Body('id') id : string,
         @Body('listReminders') listReminder: [Reminder]
     ) {
-        if (id == null || id == undefined) {
+        if (id == null || id == undefined || !isValidObjectId(id)) {
             throw new HttpException('id is required', HttpStatus.BAD_REQUEST);
         }
 
@@ -178,10 +179,11 @@ export class AccountsController {
     async getInformation(
         @Param('id') id: string
     ) {
-        if (id == null || id == undefined) {
+        if (id == null || id == undefined || !isValidObjectId(id)) {
             throw new HttpException('required id param', HttpStatus.BAD_REQUEST);
         }
-        let information = await this.accountService.getInformation(id);
+        let information = (await this.accountService.getInformation(id)).toJSON();
+        
         delete information.password;
         delete information.listCalendars;
         delete information.listLogs;
@@ -200,7 +202,7 @@ export class AccountsController {
         @Body('id') id : string,
         @Body('information') information: Account
     ) {
-        if (id == null || id == undefined) {
+        if (id == null || id == undefined || !isValidObjectId(id)) {
             throw new HttpException('id is required', HttpStatus.BAD_REQUEST);
         }
 

@@ -10,10 +10,28 @@ const apiLogin = REQUEST_URL.concat('/dietdiary/login');
 const apiGetInformation = REQUEST_URL.concat('/dietdiary/getInformation')
 //Method: POST
 const apiSetInformation = REQUEST_URL.concat('/dietdiary/setInformation')
+//Method: GET
+const apiGetCalendars = REQUEST_URL.concat('/dietdiary/getCalendars')
+//Method: POST
+const apiSetCalendars = REQUEST_URL.concat('/dietdiary/setCalendars')
+//Method: GET
+const apiGetLogs = REQUEST_URL.concat('/dietdiary/getLogs')
+//Method: POST
+const apiSetLogs = REQUEST_URL.concat('/dietdiary/setLogs')
+//Method: GET
+const apiGetReminders = REQUEST_URL.concat('/dietdiary/getReminders')
+//Method: POST
+const apiSetReminsers = REQUEST_URL.concat('/dietdiary/setReminders')
 
 module.exports = {
     apiCreateAccount,
     apiLogin,
     apiGetInformation,
     apiSetInformation,
+    apiGetCalendars,
+    apiSetCalendars,
+    apiGetLogs,
+    apiSetLogs,
+    apiGetReminders,
+    apiSetReminsers,
 }

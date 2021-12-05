@@ -9,9 +9,11 @@ export const AccountSchema = new mongoose.Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     fullname: { type: String},
-    dob: { type: Date},
+    dob: { type: String},
     sex: { type: Boolean},
     height: { type: Number},
+    eatTime: { type: Number},
+    exerciseTime: {type:Number},
     listCalendars: {type: Array},
     listLogs: {type: Array},
     listReminders: {type: Array},
@@ -29,9 +31,11 @@ export interface Account {
     email: string;
     password: string;
     fullname: string;
-    dob: Date;
+    dob: string;
     sex: boolean;
     height: number;
+    eatTime: number;
+    exerciseTime: number;
     listCalendars: [Calendar];
     listLogs: [Log];
     listReminders: [Reminder];

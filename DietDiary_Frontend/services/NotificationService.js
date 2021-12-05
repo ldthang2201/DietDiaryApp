@@ -91,9 +91,6 @@ export const NotificationService = {
     createExerciseNotification: (id, hour, minute) => {
         const today = new Date();
         let date = today.getDate();
-        console.log(getDisplayTime(today));
-        console.log(getDisplayTimeByHourMin(hour, minute));
-        console.log(getDisplayTime(today) > getDisplayTimeByHourMin(hour, minute))
         if (getDisplayTime(today) > getDisplayTimeByHourMin(hour, minute)) {
             date++;
         }

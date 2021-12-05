@@ -116,12 +116,18 @@ export const updateCalendar = (date) => new Promise((resolve, reject) => {
 
                 calendar.eatingTime = eatCount;
                 calendar.doExerciseTime = exeCount;
+                calendar.isUpdate = true;
+                calendar.updateAt = new Date();
             }
         })
         resolve();
     }).catch(error => reject(error));
 })
 
+/**
+ * Update Calendar after change times get meals end exercise
+ * @returns 
+ */
 export const updateCalendarTimes = () => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
         realm.write(() => {
@@ -131,10 +137,66 @@ export const updateCalendarTimes = () => new Promise((resolve, reject) => {
                 result = currentInfo[0];
                 let currentCalendar = realm.objects(allSchemas.CALENDAR).find(current => current.date == getDateWithString());
                 if (currentCalendar) {
-                    currentCalendar.eatTime = result.eatingTime;
-                    currentCalendar.exerciseTime = result.doExerciseTime;
+                    currentCalendar.eatTime = result.eatTime;
+                    currentCalendar.exerciseTime = result.exerciseTime;
+                    currentCalendar.updateAt = new Date();
+                    currentCalendar.isUpdate = true;
                 }
             }
+        })
+        resolve();
+    }).catch(error => reject(error));
+})
+
+/**
+ * Merge data server to data local
+ * @param {*} listCalendars 
+ * @returns 
+ */
+export const mergeToCalendarsLocal = (listCalendars) => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        realm.write(() => {
+            listCalendars.forEach(item => {
+                let existItem = realm.objects(allSchemas.CALENDAR).find(e => e.primaryKey == item.primaryKey && e.isDelete == false);
+                if (existItem) {
+                    if (new Date(existItem.updateAt) < new Date(item.updateAt)) {
+                        existItem = item;
+                    }
+                }
+            })
+        })
+        resolve();
+    }).catch(error => reject(error));
+})
+
+export const getSyncDataCalendar = () => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        const listNewCalendar = realm.objects(allSchemas.CALENDAR).filter(item => {
+            if (item.uploadAt == null) {
+                return item;
+            } else if (item.isUpdate) {
+                return item;
+            }
+        })
+        resolve(listNewCalendar);
+    }).catch(error => reject(error));
+})
+
+export const updateCalendarAfterSync = () => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        realm.write(() => {
+            let listNewCalendar = realm.objects(allSchemas.CALENDAR).filter(item => {
+                if (item.uploadAt == null) {
+                    return item;
+                } else if (item.isUpdate) {
+                    return item;
+                }
+            });
+
+            listNewCalendar.forEach(item => {
+                item.isUpdate = false;
+                item.uploadAt = new Date();
+            })
         })
         resolve();
     }).catch(error => reject(error));

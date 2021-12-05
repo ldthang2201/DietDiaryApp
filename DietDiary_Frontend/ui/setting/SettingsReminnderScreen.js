@@ -2,10 +2,11 @@ import React, { Component, createRef } from "react";
 import { Alert, ScrollView, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import BaseComponent from "../../components/BaseComponent";
 import { Picker } from "@react-native-picker/picker"
-import { logOut } from "../../databases/Information";
+import { logOut, updateInforTimes } from "../../databases/Information";
 import Styles from "../Styles";
 import PrimaryButton from "../../components/PrimaryButton";
 import { EATING_TYPE, EXERCISE_TYPE, getAllReminders, resetEatingReminder, resetExerciseReminder } from "../../databases/Reminder";
+import { updateCalendarTimes } from "../../databases/Calendar";
 const colors = require('../../assets/colors');
 const screenUtls = require('../../utils/ScreenNames');
 
@@ -61,12 +62,22 @@ export default class SettingsReminderScreen extends BaseComponent {
         let isDifferent = false;
 
         if (this.state.eatingTime != this.state.preEatingTime) {
-            resetEatingReminder(this.state.eatingTime).then().catch(error => console.log(error));
+            resetEatingReminder(this.state.eatingTime).then(() => {
+                updateInforTimes(EATING_TYPE, this.state.eatingTime).then(() => {
+                    updateCalendarTimes().then()
+                        .catch(error => console.log(error));
+                }).catch(error => console.log(error));
+            }).catch(error => console.log(error));
             isDifferent = true;
         }
 
         if (this.state.doExerciseTime != this.state.preDoExerciseTime) {
-            resetExerciseReminder(this.state.doExerciseTime).then().catch(error => console.log(error));
+            resetExerciseReminder(this.state.doExerciseTime).then(() => {
+                updateInforTimes(EXERCISE_TYPE, this.state.doExerciseTime).then(() => {
+                    updateCalendarTimes().then()
+                        .catch(error => console.log(error));
+                }).catch(error => console.log(error));
+            }).catch(error => console.log(error));
             isDifferent = true;
         }
 

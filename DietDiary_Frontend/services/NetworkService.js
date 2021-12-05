@@ -1,4 +1,4 @@
-import { apiCreateAccount, apiGetInformation, apiLogin } from "../utils/ApiUri";
+import { apiCreateAccount, apiGetCalendars, apiGetInformation, apiLogin, apiSetCalendars, apiSetInformation } from "../utils/ApiUri";
 
 const HEADER = {
     'Accept': 'application/json',
@@ -63,10 +63,87 @@ export async function Login(username, password) {
 
 export async function getInformation (id) {
     try {
+        console.log(apiGetInformation);
         let response = new Promise((resolve, reject) => {
             fetch(`${apiGetInformation}/${id}`, {
                 method: GET,
                 headers: HEADER,
+            }).then((result) => resolve(result.json())).catch((error) => reject(error));
+            setTimeout(() => {
+                reject({
+                    result: 'Fail',
+                    message: 'Network request failed, please try later!'
+                })
+            }, 10000)
+        })
+        let result = await response;
+        return result;
+    } catch (error) {
+        return error;
+    }
+}
+
+export async function setInformation(id, information) {
+    try {
+        const param = {
+            id: id,
+            information: information
+        }
+        console.log(apiSetInformation);
+        let response = new Promise((resolve, reject) => {
+            fetch(apiSetInformation, {
+                method: POST,
+                headers: HEADER,
+                body: JSON.stringify(param)
+            }).then((result) => resolve(result.json())).catch((error) => reject(error));
+            setTimeout(() => {
+                reject({
+                    result: 'Fail',
+                    message: 'Network request failed, please try later!'
+                })
+            }, 10000)
+        })
+        let result = await response;
+        return result;
+    } catch (error) {
+        return error;
+    }
+}
+
+export async function getCalendars (id) {
+    try {
+        console.log(apiGetCalendars);
+        let response = new Promise((resolve, reject) => {
+            fetch(`${apiGetCalendars}/${id}`, {
+                method: GET,
+                headers: HEADER,
+            }).then((result) => resolve(result.json())).catch((error) => reject(error));
+            setTimeout(() => {
+                reject({
+                    result: 'Fail',
+                    message: 'Network request failed, please try later!'
+                })
+            }, 10000)
+        })
+        let result = await response;
+        return result;
+    } catch (error) {
+        return error;
+    }
+}
+
+export async function setCalendars(id, listCalendars) {
+    try {
+        const param = {
+            id: id,
+            listCalendars: listCalendars
+        }
+        console.log(apiSetCalendars);
+        let response = new Promise((resolve, reject) => {
+            fetch(apiSetCalendars, {
+                method: POST,
+                headers: HEADER,
+                body: JSON.stringify(param)
             }).then((result) => resolve(result.json())).catch((error) => reject(error));
             setTimeout(() => {
                 reject({

@@ -1,6 +1,7 @@
 import Realm from "realm";
 import allSchemas from "./allSchemas"
 import { databaseOptions } from "./database";
+import { EATING_TYPE, EXERCISE_TYPE } from "./Reminder";
 
 export const Information = {
     name: allSchemas.INFORMATION,
@@ -80,6 +81,49 @@ export const logOut = () => new Promise((resolve, reject) => {
                 getOne.username = null,
                 getOne.email = null,
                 getOne.updateAt = new Date();
+            }
+        })
+        resolve();
+    }).catch((error) => reject(error));
+})
+
+export const updateInforTimes = (type, times) => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.isDelete == false);
+        realm.write(() => {
+            if (currentInfo.length > 0) {
+                let getOne = currentInfo[0];
+                if (type == EATING_TYPE) {
+                    getOne.eatTime = times;
+                }
+                if (type == EXERCISE_TYPE) {
+                    getOne.exerciseTime = times;
+                }
+                getOne.updateAt = new Date();
+                getOne.isUpdate = true;
+            }
+        })
+        resolve();
+    }).catch((error) => reject(error));
+})
+
+export const mergeInfoToLocal = (information) => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        const currentInfo = realm.objects(allSchemas.INFORMATION).filter(item => item.isDelete == false);
+        realm.write(() => {
+            if (currentInfo.length > 0) {
+                let getOne = currentInfo[0];
+                if (new Date(getOne.updateAt) < new Date(information.updateAt)) {
+                    getOne.height = information.height;
+                    getOne.fullname = information.fullname;
+                    getOne.dob = information.dob;
+                    getOne.eatTime = information.eatTime;
+                    getOne.exerciseTime = information.exerciseTime;
+                    getOne.dateUsingApp = information.dateUsingApp;
+                    getOne.isVerify = information.isVerify;
+                    getOne.updateAt = new Date();
+                    getOne.isUpdate = true;
+                }
             }
         })
         resolve();

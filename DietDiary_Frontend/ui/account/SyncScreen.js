@@ -4,6 +4,7 @@ import BaseComponent from "../../components/BaseComponent";
 import Styles from "../Styles";
 import PrimaryButton from "../../components/PrimaryButton"
 import AnimatedLottieView from "lottie-react-native";
+import { syncGetCalendars, syncGetInfor, syncSetCalendars, syncSetInfo } from "../../utils/SyncUtils";
 const colors = require('../../assets/colors');
 const screenUtls = require('../../utils/ScreenNames');
 
@@ -22,20 +23,17 @@ export default class SyncScreen extends BaseComponent {
         if (this.params != undefined && this.params.isFromSettings != undefined) {
             this.isFromSettings = this.params.isFromSettings;
         }
+
+        this.state = {
+            isSync: false
+        }
     }
 
-    onSkip = () => {
-        this.navigation.navigate(screenUtils.RegisterInfoScreen)
-
-        StoredKeysUtls.setBoolean(StoredKeysUtls.key_account_connect, true);
-    }
-
-    onOpenLogin = () => {
-        this.navigation.navigate(screenUtils.LoginScreen, { isFromSettings: this.isFromSettings });
-    }
-
-    onOpenCreateAccount = () => {
-        this.navigation.navigate(screenUtils.SigninScreen, { isFromSettings: this.isFromSettings });
+    _onSync = async () => {
+        // const result = await syncGetInfor();
+        // syncSetInfo();
+        // syncGetCalendars();
+        syncSetCalendars();
     }
 
     render() {
@@ -44,16 +42,22 @@ export default class SyncScreen extends BaseComponent {
                 <View style={{ alignItems: 'center' }}>
                     <Image source={require('../../assets/icons/cloud.png')}
                         style={{ width: screenWidth * 0.5, height: screenWidth * 0.5 }} />
-                    <View style={{ width: primaryButtonWidth}}>
+                    <View style={{ width: primaryButtonWidth }}>
                         <Text style={Styles.text_description_center}>To backup your data, sync manual now</Text>
                     </View>
-                    <View>
-                        <AnimatedLottieView style = {{width: 150}} source={require('../../assets/gifs/dotsloading.json')} autoPlay loop />
+                    {
+                        this.state.isSync &&
+                        <View>
+                            <AnimatedLottieView style={{ width: 150 }} source={require('../../assets/gifs/dotsloading.json')} autoPlay loop />
+                        </View>
+                    }
+                </View>
+                {
+                    !this.state.isSync &&
+                    <View style={{ marginBottom: 30 }}>
+                        <PrimaryButton title='Sync now' onPress={() => this._onSync()} type="primary" />
                     </View>
-                </View>
-                <View style={{ marginBottom: 30 }}>
-                    <PrimaryButton title='Sync now' onPress={() => this.onOpenCreateAccount()} type = "primary"/>
-                </View>
+                }
             </View>
         )
     }

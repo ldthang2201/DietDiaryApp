@@ -76,7 +76,7 @@ export class AccountsService {
             const existIndex = existAccount.listCalendars.findIndex(e => e.primaryKey == item.primaryKey);
 
             if (existIndex != -1) {
-                if (existAccount.listCalendars[existIndex].updateAt < item.updateAt) {
+                if (existAccount.listCalendars[existIndex].updateAt < new Date(item.updateAt)) {
                     existAccount.listCalendars[existIndex] = item;
                 }
             } else {
@@ -108,7 +108,7 @@ export class AccountsService {
             const existIndex = existAccount.listCalendars.findIndex(e => e.primaryKey == item.primaryKey);
 
             if (existIndex != -1) {
-                if (existAccount.listLogs[existIndex].updateAt < item.updateAt) {
+                if (existAccount.listLogs[existIndex].updateAt < new Date(item.updateAt)) {
                     existAccount.listLogs[existIndex] = item;
                 }
             } else {
@@ -140,7 +140,7 @@ export class AccountsService {
             const existIndex = existAccount.listCalendars.findIndex(e => e.primaryKey == item.primaryKey);
 
             if (existIndex != -1) {
-                if (existAccount.listReminders[existIndex].updateAt < item.updateAt) {
+                if (existAccount.listReminders[existIndex].updateAt < new Date(item.updateAt)) {
                     existAccount.listReminders[existIndex] = item;
                 }
             } else {
@@ -166,11 +166,16 @@ export class AccountsService {
             throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
         };
 
-        if (existAccount.updateAt < information.updateAt) {
+        if (existAccount.updateAt < new Date(information.updateAt)) {
+            console.log("update");
             existAccount.fullname = information.fullname;
             existAccount.dob = information.dob;
             existAccount.height = information.height;
-            existAccount.updateAt = new Date();
+            existAccount.updateAt = new Date(information.updateAt);
+            existAccount.dateUsingApp = information.dateUsingApp;
+            existAccount.eatTime = information.eatTime;
+            existAccount.exerciseTime = information.exerciseTime;
+            existAccount.isUpdate = information.isUpdate;
         }
 
         return await existAccount.save();

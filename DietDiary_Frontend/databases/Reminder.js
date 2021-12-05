@@ -47,7 +47,7 @@ export const resetEatingReminder = (times) => new Promise((resolve, reject) => {
                 listEatingReminder.forEach(item => {
                     item.isDelete = true;
                     if (item.isNotify) {
-                        NotificationService.cancelNotification(item.primaryKey.slice(numberSlice)).then().catch(error => console.log(error));
+                        NotificationService.cancelNotification(item.primaryKey.slice(numberSlice));
                     }
                 })
             }
@@ -136,7 +136,7 @@ export const resetExerciseReminder = (times) => new Promise((resolve, reject) =>
                 listExerciseReminder.forEach(item => {
                     item.isDelete = true;
                     if (item.isNotify) {
-                        NotificationService.cancelNotification(item.primaryKey.slice(numberSlice)).then().catch(error => console.log(error));
+                        NotificationService.cancelNotification(item.primaryKey.slice(numberSlice));
                     }
                 })
             }
@@ -192,7 +192,7 @@ export const resetWeighReminder = () => new Promise((resolve, reject) => {
                 listWeighReminder.forEach(item => {
                     item.isDelete = true;
                     if (item.isNotify) {
-                        NotificationService.cancelNotification(item.primaryKey.slice(numberSlice)).then().catch(error => console.log(error));
+                        NotificationService.cancelNotification(item.primaryKey.slice(numberSlice));
                     }
                 })
             }

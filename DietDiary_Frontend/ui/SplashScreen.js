@@ -48,9 +48,12 @@ export default class SplashScreen extends BaseComponent {
                 let nextDate = getNextDate(result.date);
                 while (1) {
                     const today = getDateWithString();
+                    const date = new Date(nextDate);
+                    const primaryKey = `${date.getTime().toString()}${date.getFullYear()}${date.getMonth()}${date.getDate()}`;
                     // if nextDate is current date
                     if (nextDate == today) {
                         const newCalendar = {
+                            primaryKey: primaryKey,
                             date: nextDate,
                             eatTime: result.eatTime,
                             exerciseTime: result.exerciseTime,
@@ -60,6 +63,7 @@ export default class SplashScreen extends BaseComponent {
                         createNewCalendar(newCalendar).then().catch(error => console.log(error));
                     } else if (nextDate < today) {
                         const newCalendar = {
+                            primaryKey: primaryKey,
                             date: nextDate,
                             eatTime: result.eatTime,
                             eatingTime: -1,
@@ -80,7 +84,10 @@ export default class SplashScreen extends BaseComponent {
     }
 
     _createCalendar = async () => {
+        const today = new Date();
+        const primaryKey = `${today.getTime().toString()}${today.getFullYear()}${today.getMonth()}${today.getDate()}`;
         const newCalendar = {
+            primaryKey: primaryKey,
             date: getDateWithString(),
             eatTime: 3,
             exerciseTime: 1,
