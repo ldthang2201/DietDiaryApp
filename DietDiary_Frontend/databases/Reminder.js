@@ -46,6 +46,8 @@ export const resetEatingReminder = (times) => new Promise((resolve, reject) => {
             if (listEatingReminder) {
                 listEatingReminder.forEach(item => {
                     item.isDelete = true;
+                    item.updateAt = new Date();
+                    item.isUpdate = true;
                     if (item.isNotify) {
                         NotificationService.cancelNotification(item.primaryKey.slice(numberSlice));
                     }
@@ -135,6 +137,8 @@ export const resetExerciseReminder = (times) => new Promise((resolve, reject) =>
             if (listExerciseReminder) {
                 listExerciseReminder.forEach(item => {
                     item.isDelete = true;
+                    item.updateAt = new Date();
+                    item.isUpdate = true;
                     if (item.isNotify) {
                         NotificationService.cancelNotification(item.primaryKey.slice(numberSlice));
                     }
@@ -191,6 +195,8 @@ export const resetWeighReminder = () => new Promise((resolve, reject) => {
             if (listWeighReminder) {
                 listWeighReminder.forEach(item => {
                     item.isDelete = true;
+                    item.updateAt = new Date();
+                    item.isUpdate = true;
                     if (item.isNotify) {
                         NotificationService.cancelNotification(item.primaryKey.slice(numberSlice));
                     }
@@ -228,9 +234,7 @@ export const updateReminderNotify = (item, isNotify) => new Promise((resolve, re
                 reminder.minute = item.minute;
                 reminder.isNotify = isNotify;
                 reminder.updateAt = new Date();
-                if (reminder.uploadAt) {
-                    reminder.isUpdate = true;
-                }
+                reminder.isUpdate = true;
 
                 if (isNotify) {
                     // create new notification with new time
@@ -271,9 +275,7 @@ export const updateReminderTime = (primaryKey, hour, minute) => new Promise((res
                 reminder.hour = hour;
                 reminder.minute = minute;
                 reminder.updateAt = new Date();
-                if (reminder.uploadAt) {
-                    reminder.isUpdate = true;
-                }
+                reminder.isUpdate = true;
             }
 
             // cancel notification with old time
@@ -299,3 +301,73 @@ export const updateReminderTime = (primaryKey, hour, minute) => new Promise((res
         resolve();
     }).catch((error) => reject(error));
 });
+
+/**
+ * Merge data server to data local
+ * @param {*} listReminders 
+ * @returns 
+ */
+ export const mergeRemindersToLocal = (listReminders) => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        realm.write(() => {
+            listReminders.forEach(item => {
+                let existItem = realm.objects(allSchemas.REMINDER).find(e => e.primaryKey == item.primaryKey);
+                if (existItem) {
+                    if (new Date(existItem.updateAt) < new Date(item.updateAt)) {
+                        existItem.isNotify = item.isNotify;
+                        existItem.hour = item.hour;
+                        existItem.minute = item.minute;
+                        existItem.type = item.type;
+                        existItem.updateAt = item.updateAt;
+                        existItem.uploadAt = item.uploadAt;
+                        existItem.isDelete = item.isDelete;
+                    }
+                } else {
+                    realm.create(allSchemas.REMINDER, item);
+                }
+
+                if (!item.isDelete) {
+                    updateReminderNotify(item, item.isNotify).then().catch(error => console.log(error));
+                }
+            })
+        })
+        resolve();
+    }).catch(error => reject(error));
+})
+
+/**
+ * Get list of reminder need to sync
+ * @returns 
+ */
+export const getSyncDataReminders = () => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        const listReminders = realm.objects(allSchemas.REMINDER).filter(item => {
+            if (item.uploadAt == null) {
+                return item;
+            } else if (item.isUpdate) {
+                return item;
+            }
+        })
+        resolve(listReminders);
+    }).catch(error => reject(error));
+})
+
+export const updateReminderAfterSync = () => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        realm.write(() => {
+            let listNewReminders = realm.objects(allSchemas.REMINDER).filter(item => {
+                if (item.uploadAt == null) {
+                    return item;
+                } else if (item.isUpdate) {
+                    return item;
+                }
+            });
+
+            listNewReminders.forEach(item => {
+                item.isUpdate = false;
+                item.uploadAt = new Date();
+            })
+        })
+        resolve();
+    }).catch(error => reject(error));
+})

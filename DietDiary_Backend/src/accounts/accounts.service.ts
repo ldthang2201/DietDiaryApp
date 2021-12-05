@@ -73,10 +73,11 @@ export class AccountsService {
         let newCalendars = listCalendars;
 
         newCalendars.forEach(item => {
-            const existIndex = existAccount.listCalendars.findIndex(e => e.primaryKey == item.primaryKey);
+            const existIndex = existAccount.listCalendars.findIndex(e => e.primaryKey == item.primaryKey || e.date == item.date);
+            item.uploadAt = new Date();
 
             if (existIndex != -1) {
-                if (existAccount.listCalendars[existIndex].updateAt < new Date(item.updateAt)) {
+                if (new Date(existAccount.listCalendars[existIndex].updateAt) < new Date(item.updateAt)) {
                     existAccount.listCalendars[existIndex] = item;
                 }
             } else {
@@ -105,10 +106,11 @@ export class AccountsService {
         let newLogs = listLogs;
 
         newLogs.forEach(item => {
-            const existIndex = existAccount.listCalendars.findIndex(e => e.primaryKey == item.primaryKey);
+            const existIndex = existAccount.listLogs.findIndex(e => e.primaryKey == item.primaryKey);
+            item.uploadAt = new Date();
 
             if (existIndex != -1) {
-                if (existAccount.listLogs[existIndex].updateAt < new Date(item.updateAt)) {
+                if (new Date(existAccount.listLogs[existIndex].updateAt) < new Date(item.updateAt)) {
                     existAccount.listLogs[existIndex] = item;
                 }
             } else {
@@ -137,10 +139,11 @@ export class AccountsService {
         let newReminders = listReminders;
 
         newReminders.forEach(item => {
-            const existIndex = existAccount.listCalendars.findIndex(e => e.primaryKey == item.primaryKey);
+            const existIndex = existAccount.listReminders.findIndex(e => e.primaryKey == item.primaryKey);
+            item.uploadAt = new Date();
 
             if (existIndex != -1) {
-                if (existAccount.listReminders[existIndex].updateAt < new Date(item.updateAt)) {
+                if (new Date(existAccount.listReminders[existIndex].updateAt) < new Date(item.updateAt)) {
                     existAccount.listReminders[existIndex] = item;
                 }
             } else {
@@ -166,7 +169,7 @@ export class AccountsService {
             throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
         };
 
-        if (existAccount.updateAt < new Date(information.updateAt)) {
+        if (new Date(existAccount.updateAt) < new Date(information.updateAt)) {
             console.log("update");
             existAccount.fullname = information.fullname;
             existAccount.dob = information.dob;
@@ -176,6 +179,7 @@ export class AccountsService {
             existAccount.eatTime = information.eatTime;
             existAccount.exerciseTime = information.exerciseTime;
             existAccount.isUpdate = information.isUpdate;
+            existAccount.uploadAt = new Date();
         }
 
         return await existAccount.save();

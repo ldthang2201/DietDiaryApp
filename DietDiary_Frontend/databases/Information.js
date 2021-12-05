@@ -113,17 +113,17 @@ export const mergeInfoToLocal = (information) => new Promise((resolve, reject) =
         realm.write(() => {
             if (currentInfo.length > 0) {
                 let getOne = currentInfo[0];
-                if (new Date(getOne.updateAt) < new Date(information.updateAt)) {
+                if ((new Date(getOne.updateAt) < new Date(information.updateAt)) || getOne.fullname == null) {
                     getOne.height = information.height;
                     getOne.fullname = information.fullname;
                     getOne.dob = information.dob;
                     getOne.eatTime = information.eatTime;
                     getOne.exerciseTime = information.exerciseTime;
-                    getOne.dateUsingApp = information.dateUsingApp;
                     getOne.isVerify = information.isVerify;
                     getOne.updateAt = new Date();
                     getOne.isUpdate = true;
                 }
+                getOne.dateUsingApp = information.dateUsingApp;
             }
         })
         resolve();

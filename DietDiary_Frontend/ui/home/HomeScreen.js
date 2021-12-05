@@ -55,7 +55,7 @@ export default class HomeScreen extends BaseComponent {
         const currentUser = await this.getCurrentUser();
 
         let minDateCalendar = await StoredKeysUtls.getString(StoredKeysUtls.key_date_using_app);
-        if (!currentUser) {
+        if (currentUser) {
             minDateCalendar = currentUser.dateUsingApp.length > 0 ? currentUser.dateUsingApp : this.state.minDateCalendar;
         }
 

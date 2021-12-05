@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { Dimensions, Image, ScrollView, Text, TouchableHighlight, View } from "react-native";
+import { Alert, Dimensions, Image, ScrollView, Text, TouchableHighlight, View } from "react-native";
 import BaseComponent from "../../components/BaseComponent";
 import Styles from "../Styles";
 import PrimaryButton from "../../components/PrimaryButton"
 import AnimatedLottieView from "lottie-react-native";
-import { syncGetCalendars, syncGetInfor, syncSetCalendars, syncSetInfo } from "../../utils/SyncUtils";
+import { syncAll } from "../../utils/SyncUtils";
 const colors = require('../../assets/colors');
 const screenUtls = require('../../utils/ScreenNames');
 
@@ -30,10 +30,44 @@ export default class SyncScreen extends BaseComponent {
     }
 
     _onSync = async () => {
-        // const result = await syncGetInfor();
-        // syncSetInfo();
-        // syncGetCalendars();
-        syncSetCalendars();
+        this.setState({
+            isSync: true
+        });
+
+        setTimeout(() => {
+            syncAll().then(result => {
+                this.setState({
+                    isSync: false
+                });
+                if (result) {
+                    Alert.alert('Inform', "Sync successfully!", [
+                        {
+                            text: 'OK',
+                            onPress: () => {
+                                if (this.isFromSettings) {
+                                    this.backToPreviousScreen(this.navigation);
+                                } else {
+                                    this.finishAllAndOpenScreen(this.navigation, screenUtls.HomeApp);
+                                }
+                            }
+                        }
+                    ], { cancelable: false })
+                } else {
+                    Alert.alert('Error', "Sync error, please try later!", [
+                        {
+                            text: 'OK',
+                            onPress: () => {
+                                if (this.isFromSettings) {
+                                    this.backToPreviousScreen(this.navigation);
+                                } else {
+                                    this.finishAllAndOpenScreen(this.navigation, screenUtls.RegisterInfoScreen);
+                                }
+                            }
+                        }
+                    ], { cancelable: false })
+                }
+            })
+        }, 1500);
     }
 
     render() {

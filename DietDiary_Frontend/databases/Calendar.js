@@ -153,15 +153,26 @@ export const updateCalendarTimes = () => new Promise((resolve, reject) => {
  * @param {*} listCalendars 
  * @returns 
  */
-export const mergeToCalendarsLocal = (listCalendars) => new Promise((resolve, reject) => {
+export const mergeCalendarsToLocal = (listCalendars) => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
         realm.write(() => {
             listCalendars.forEach(item => {
-                let existItem = realm.objects(allSchemas.CALENDAR).find(e => e.primaryKey == item.primaryKey && e.isDelete == false);
+                let existItem = realm.objects(allSchemas.CALENDAR).find(e => e.primaryKey == item.primaryKey || e.date == item.date);
                 if (existItem) {
                     if (new Date(existItem.updateAt) < new Date(item.updateAt)) {
-                        existItem = item;
+                        existItem.eatTime = item.eatTime;
+                        existItem.eatingTime = item.eatingTime;
+                        existItem.exerciseTime = item.exerciseTime;
+                        existItem.doExerciseTime = item.doExerciseTime;
+                        existItem.weight = item.weight;
+                        existItem.preWeight = item.preWeight;
+                        existItem.isDelete = item.isDelete;
+                        existItem.updateAt = item.updateAt;
+                        existItem.uploadAt = item.uploadAt;
+
                     }
+                } else {
+                    realm.create(allSchemas.CALENDAR, item);
                 }
             })
         })
@@ -169,6 +180,10 @@ export const mergeToCalendarsLocal = (listCalendars) => new Promise((resolve, re
     }).catch(error => reject(error));
 })
 
+/**
+ * Get list of calendars need to sync
+ * @returns 
+ */
 export const getSyncDataCalendar = () => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
         const listNewCalendar = realm.objects(allSchemas.CALENDAR).filter(item => {
