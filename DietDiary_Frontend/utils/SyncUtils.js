@@ -141,11 +141,12 @@ export const syncAll = async () => {
                         // set Logs
                         const setLogs = await syncSetLogs();
                         if (setLogs && setLogs.result == "OK") {
-                            // set Reminder
+                            // get Reminder
                             const getReminders = await syncGetReminders();
                             if (getReminders && getReminders.result == "OK") {
-                                // get Reminders
+                                // set Reminders
                                 const setReminders = await syncSetReminders();
+                                console.log(setReminders);
                                 if (setReminders && setReminders.result == "OK") {
                                     return true;
                                 } else {

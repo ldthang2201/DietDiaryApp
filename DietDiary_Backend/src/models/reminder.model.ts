@@ -5,6 +5,7 @@ export const ReminderSchema = new mongoose.Schema({
     hour: { type: Number },
     minute: { type: Number },
     type: { type: String },
+    order: { type: Number },
     isNotify: { type: Boolean, default: false },
     createAt: { type: Date, default: new Date() },
     updateAt: { type: Date, default: new Date() },
@@ -18,6 +19,7 @@ export interface Reminder {
     hour: number;
     minute: number;
     type: string;
+    order: number;
     isNotify: boolean;
     createAt: Date;
     updateAt: Date;

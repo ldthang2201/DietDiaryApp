@@ -5,6 +5,7 @@ import Styles from "../Styles";
 import PrimaryButton from "../../components/PrimaryButton"
 import AnimatedLottieView from "lottie-react-native";
 import { syncAll } from "../../utils/SyncUtils";
+import { StoredKeysUtls } from "../../utils/StoredKeys";
 const colors = require('../../assets/colors');
 const screenUtls = require('../../utils/ScreenNames');
 
@@ -48,6 +49,8 @@ export default class SyncScreen extends BaseComponent {
                                     this.backToPreviousScreen(this.navigation);
                                 } else {
                                     this.finishAllAndOpenScreen(this.navigation, screenUtls.HomeApp);
+                                    // set flag
+                                    StoredKeysUtls.setBoolean(StoredKeysUtls.key_register_information, true);
                                 }
                             }
                         }

@@ -152,11 +152,12 @@ export default class ChartScreen extends BaseComponent {
 
     _onLoadData = () => {
         getAllCalendars().then(result => {
-            const lstWeightDisplay = this._getListWeights(result, FIRST_WEEK);
+            const displayedDays =  this.state.displayedDays;
+            const lstWeightDisplay = this._getListWeights(result, displayedDays);
             this.setState({
                 lstWeightDisplay,
                 lstWeight: result,
-                displayData: this._getData(result, FIRST_WEEK),
+                displayData: this._getData(result, displayedDays),
                 isShow: lstWeightDisplay.length > 0,
             })
         }).catch(error => console.log(error));

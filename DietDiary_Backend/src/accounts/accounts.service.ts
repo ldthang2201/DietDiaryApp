@@ -127,7 +127,7 @@ export class AccountsService {
             throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
         };
 
-        return existAccount.listReminders;
+        return existAccount.listReminders.filter(e => e.isDelete == false);
     }
 
     async setReminders(objectId: string, listReminders: [Reminder]) {

@@ -28,6 +28,7 @@ export const Reminder = {
         hour: { type: "int", default: "0" },
         minute: { type: "int", default: "0" },
         type: "string",
+        order: { type: "int" },
         isNotify: { type: "bool", default: false },
         createAt: { type: "date", default: new Date() },
         updateAt: { type: "date", default: new Date() },
@@ -54,6 +55,7 @@ export const resetEatingReminder = (times) => new Promise((resolve, reject) => {
                 })
             }
 
+            let order = 0;
             switch (times) {
                 case 1:
                     EatingOneTime.forEach((item) => {
@@ -61,9 +63,11 @@ export const resetEatingReminder = (times) => new Promise((resolve, reject) => {
                             primaryKey: `${new Date().getTime().toString()}${item}`,
                             hour: item,
                             minute: 0,
+                            order: order,
                             type: EATING_TYPE,
                         };
                         realm.create(allSchemas.REMINDER, newReminder);
+                        order++;
                     });
                     break;
                 case 2:
@@ -72,9 +76,11 @@ export const resetEatingReminder = (times) => new Promise((resolve, reject) => {
                             primaryKey: `${new Date().getTime().toString()}${item}`,
                             hour: item,
                             minute: 0,
+                            order: order,
                             type: EATING_TYPE,
                         };
                         realm.create(allSchemas.REMINDER, newReminder);
+                        order++;
                     });
                     break;
                 case 3:
@@ -83,9 +89,11 @@ export const resetEatingReminder = (times) => new Promise((resolve, reject) => {
                             primaryKey: `${new Date().getTime().toString()}${item}`,
                             hour: item,
                             minute: 0,
+                            order: order,
                             type: EATING_TYPE,
                         };
                         realm.create(allSchemas.REMINDER, newReminder);
+                        order++;
                     });
                     break;
                 case 4:
@@ -94,9 +102,11 @@ export const resetEatingReminder = (times) => new Promise((resolve, reject) => {
                             primaryKey: `${new Date().getTime().toString()}${item}`,
                             hour: item,
                             minute: 0,
+                            order: order,
                             type: EATING_TYPE,
                         };
                         realm.create(allSchemas.REMINDER, newReminder);
+                        order++;
                     });
                     break;
                 case 5:
@@ -105,9 +115,11 @@ export const resetEatingReminder = (times) => new Promise((resolve, reject) => {
                             primaryKey: `${new Date().getTime().toString()}${item}`,
                             hour: item,
                             minute: 0,
+                            order: order,
                             type: EATING_TYPE,
                         };
                         realm.create(allSchemas.REMINDER, newReminder);
+                        order++;
                     });
                     break;
                 case 6:
@@ -116,9 +128,11 @@ export const resetEatingReminder = (times) => new Promise((resolve, reject) => {
                             primaryKey: `${new Date().getTime().toString()}${item}`,
                             hour: item,
                             minute: 0,
+                            order: order,
                             type: EATING_TYPE,
                         };
                         realm.create(allSchemas.REMINDER, newReminder);
+                        order++;
                     });
                     break;
                 default:
@@ -145,6 +159,7 @@ export const resetExerciseReminder = (times) => new Promise((resolve, reject) =>
                 })
             }
 
+            let order = 0;
             switch (times) {
                 case 1:
                     ExerciseOneTime.forEach((item) => {
@@ -152,9 +167,11 @@ export const resetExerciseReminder = (times) => new Promise((resolve, reject) =>
                             primaryKey: `${new Date().getTime().toString()}${item}`,
                             hour: item,
                             minute: 0,
+                            order: order,
                             type: EXERCISE_TYPE,
                         };
                         realm.create(allSchemas.REMINDER, newReminder);
+                        order++;
                     });
                     break;
                 case 2:
@@ -163,9 +180,11 @@ export const resetExerciseReminder = (times) => new Promise((resolve, reject) =>
                             primaryKey: `${new Date().getTime().toString()}${item}`,
                             hour: item,
                             minute: 0,
+                            order: order,
                             type: EXERCISE_TYPE,
                         };
                         realm.create(allSchemas.REMINDER, newReminder);
+                        order++;
                     });
                     break;
                 case 3:
@@ -174,9 +193,11 @@ export const resetExerciseReminder = (times) => new Promise((resolve, reject) =>
                             primaryKey: `${new Date().getTime().toString()}${item}`,
                             hour: item,
                             minute: 0,
+                            order: order,
                             type: EXERCISE_TYPE,
                         };
                         realm.create(allSchemas.REMINDER, newReminder);
+                        order++;
                     });
                     break;
                 default:
@@ -208,6 +229,7 @@ export const resetWeighReminder = () => new Promise((resolve, reject) => {
                 hour: weighHour,
                 minute: weighMinute,
                 type: WEIGH_TYPE,
+                order: 0,
             };
             realm.create(allSchemas.REMINDER, newReminder);
         });
@@ -307,7 +329,7 @@ export const updateReminderTime = (primaryKey, hour, minute) => new Promise((res
  * @param {*} listReminders 
  * @returns 
  */
- export const mergeRemindersToLocal = (listReminders) => new Promise((resolve, reject) => {
+export const mergeRemindersToLocal = (listReminders) => new Promise((resolve, reject) => {
     Realm.open(databaseOptions).then(realm => {
         realm.write(() => {
             listReminders.forEach(item => {
@@ -317,13 +339,25 @@ export const updateReminderTime = (primaryKey, hour, minute) => new Promise((res
                         existItem.isNotify = item.isNotify;
                         existItem.hour = item.hour;
                         existItem.minute = item.minute;
-                        existItem.type = item.type;
                         existItem.updateAt = item.updateAt;
                         existItem.uploadAt = item.uploadAt;
-                        existItem.isDelete = item.isDelete;
                     }
                 } else {
-                    realm.create(allSchemas.REMINDER, item);
+                    existItem = realm.objects(allSchemas.REMINDER).find(e => e.type == item.type && e.order == item.order && e.isDelete == false)
+                    if (existItem) {
+                        if (new Date(existItem.updateAt) < new Date(item.updateAt)) {
+                            existItem.isDelete = true;
+                            existItem.isUpdate = true;
+                            existItem.updateAt = new Date();
+                        } else {
+                            item.isDelete = true;
+                            item.isUpdate = true;
+                            item.updateAt = new Date();
+                        }
+                        realm.create(allSchemas.REMINDER, item);
+                    } else {
+                        realm.create(allSchemas.REMINDER, item);
+                    }
                 }
 
                 if (!item.isDelete) {
