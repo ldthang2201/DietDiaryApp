@@ -5,135 +5,76 @@ import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import Styles from "../Styles";
 import colors from "../../assets/colors";
 import { getDateWithString } from "../../utils/DatetimeUtls";
+import { getAllCalendars } from "../../databases/Calendar";
+import { StoredKeysUtls } from "../../utils/StoredKeys";
 
 const screenWidth = Dimensions.get('window').width;
 const calendarItemWidth = screenWidth / 7;
 const calendarItemHeight = screenWidth / 8;
 const calendarCircle = calendarItemHeight * 0.7;
 
-var ListLogEx = [
-    {
-        id: 1,
-        datetime: '2021-10-20',
-        date: 1,
-        month: 10,
-        year: 2021,
-        eats: 3,
-        timeEx: 2,
-        exercises: 1,
-    },
-    {
-        id: 2,
-        datetime: '2021-10-21',
-        date: 2,
-        month: 10,
-        year: 2021,
-        eats: 2,
-        timeEx: 2,
-        exercises: 1,
-    },
-    {
-        id: 3,
-        datetime: '2021-10-18',
-        date: 20,
-        month: 10,
-        year: 2021,
-        eats: 3,
-        timeEx: 2,
-        exercises: 1,
-    },
-    {
-        id: 4,
-        datetime: '2021-10-15',
-        date: 19,
-        month: 10,
-        year: 2021,
-        eats: 2,
-        timeEx: 2,
-        exercises: 2,
-    },
-    {
-        id: 5,
-        datetime: '2021-10-14',
-        date: 21,
-        month: 10,
-        year: 2021,
-        eats: 2,
-        timeEx: 2,
-        exercises: 2,
-    },
-    {
-        id: 5,
-        datetime: '2021-10-03',
-        date: 21,
-        month: 10,
-        year: 2021,
-        eats: 2,
-        timeEx: 2,
-        exercises: 2,
-    },
-    {
-        id: 5,
-        datetime: '2021-10-02',
-        date: 21,
-        month: 10,
-        year: 2021,
-        eats: 2,
-        timeEx: 2,
-        exercises: 2,
-    },
-    {
-        id: 6,
-        datetime: '2021-10-22',
-        date: 21,
-        month: 10,
-        year: 2021,
-        eats: 1,
-        timeEx: 2,
-        exercises: 1,
-    },
-]
-
 export default class HomeScreen extends BaseComponent {
 
     constructor(props) {
         super(props);
 
-        const log = ListLogEx.find(log => {
-            return log.datetime === getDateWithString()
-        })
+        this.listCalendars = [];
 
         this.state = {
             isLoading: false,
             selectedDateDisplayed: 'Today',
-            lstLog: ListLogEx,
-            isNoRecord: log === undefined,
-            eats: log === undefined ? 0 : log.eats,
-            exercises: log === undefined ? 0 : log.exercises,
-            displayType: log,
+            isNoRecord: true,
+            eats: 0,
+            exercises: 0,
+            displayCalendar: {},
             selectedDate: getDateWithString(),
+            minDateCalendar: '2021-05-10',
         }
     }
 
     _unsubscribe = this.props.navigation.addListener('focus', () => {
         // todo: update list log here
-        this.setState({});
+        this._updateState();
     });
 
     componentDidMount() {
         this._unsubscribe;
+        this._updateState();
     }
 
     componentWillUnmount() {
         this._unsubscribe();
     }
 
+    _updateState = async () => {
+        this.listCalendars = await getAllCalendars();
+        const selectedCalendar = this.listCalendars.find(item => item.date == this.state.selectedDate);
+        // set no record
+        let isNoRecord = selectedCalendar == undefined;
 
+        const currentUser = await this.getCurrentUser();
+
+        let minDateCalendar = await StoredKeysUtls.getString(StoredKeysUtls.key_date_using_app);
+        if (currentUser) {
+            minDateCalendar = currentUser.dateUsingApp.length > 0 ? currentUser.dateUsingApp : this.state.minDateCalendar;
+        }
+
+        if (selectedCalendar && selectedCalendar.doExerciseTime == -1 && selectedCalendar.eatingTime == -1) {
+            isNoRecord = true;
+        }
+        this.setState({
+            displayCalendar: selectedCalendar,
+            isNoRecord: isNoRecord,
+            eats: selectedCalendar === undefined ? 0 : selectedCalendar.eatingTime,
+            exercises: selectedCalendar === undefined ? 0 : selectedCalendar.doExerciseTime,
+            minDateCalendar,
+        })
+
+    }
 
     render() {
         const today = new Date();
-        const string = today.toJSON();
-        const now = JSON.stringify(string)
+
         return (
             <ScrollView style={{ backgroundColor: colors.basepopBackground }}>
                 <View>
@@ -141,7 +82,7 @@ export default class HomeScreen extends BaseComponent {
                         // Initially visible month. Default = Date()
                         current={today}
                         // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
-                        minDate={'2021-05-10'}
+                        minDate={this.state.minDateCalendar}
                         // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
                         maxDate={today}
                         // Handler which gets executed when press arrow icon left. It receive a callback can go back month
@@ -156,11 +97,9 @@ export default class HomeScreen extends BaseComponent {
                         dayComponent={(date) => {
                             // get select datetime
                             const selectedDate = date.date.dateString;
-                            // get listLog in State
-                            const listLogs = this.state.lstLog
                             //get selected Log
-                            const selectedLog = listLogs.find(log => {
-                                return log.datetime === selectedDate
+                            const selectedCalendar = this.listCalendars.find(item => {
+                                return item.date === selectedDate
                             })
 
                             let displayColorItem = 'white';
@@ -169,10 +108,12 @@ export default class HomeScreen extends BaseComponent {
                                 displayColorItem = '#DEE4CF';
                             }
                             // display color of text number
-                            if (selectedLog != undefined) {
-                                if (selectedLog.timeEx > selectedLog.exercises) {
+                            if (selectedCalendar != undefined) {
+                                if (selectedCalendar.preWeight != -1 && selectedCalendar.preWeight < selectedCalendar.weight) {
+                                    displayColorItem = colors.bad;
+                                } else if (selectedCalendar.exerciseTime > selectedCalendar.doExerciseTime && selectedCalendar.doExerciseTime != -1) {
                                     displayColorItem = colors.notgood;
-                                } else if (selectedLog.timeEx <= selectedLog.exercises) {
+                                } else if (selectedCalendar.exerciseTime <= selectedCalendar.doExerciseTime) {
                                     displayColorItem = colors.good;
                                 }
                             }
@@ -185,15 +126,20 @@ export default class HomeScreen extends BaseComponent {
 
                             const activeDate = (
                                 <TouchableOpacity onPress={() => {
+                                    let isNoRecord = selectedCalendar == undefined;
+                                    if (selectedCalendar && selectedCalendar.doExerciseTime == -1 && selectedCalendar.eatingTime == -1) {
+                                        isNoRecord = true;
+                                    }
                                     this.setState({
-                                        isNoRecord: selectedLog === undefined,
+                                        isNoRecord: isNoRecord,
                                         selectedDateDisplayed: date.state === 'today' ? 'Today' : date.accessibilityLabel,
-                                        eats: selectedLog === undefined ? 0 : selectedLog.eats,
-                                        exercises: selectedLog === undefined ? 0 : selectedLog.exercises,
                                         selectedDate: date.date.dateString,
+                                        displayCalendar: selectedCalendar,
+                                        eats: selectedCalendar === undefined ? 0 : selectedCalendar.eatingTime,
+                                        exercises: selectedCalendar === undefined ? 0 : selectedCalendar.doExerciseTime,
                                     })
                                 }}>
-                                    <View style={{ justifyContent: 'center', alignItems: 'center', width: calendarItemWidth, height: calendarItemHeight, backgroundColor: displayBackground}}>
+                                    <View style={{ justifyContent: 'center', alignItems: 'center', width: calendarItemWidth, height: calendarItemHeight, backgroundColor: displayBackground }}>
                                         <Text style={{ color: date.state === 'today' ? 'blue' : 'black', fontSize: 14, fontWeight: '600' }}>{date.date.day}</Text>
                                         <View style={{ width: calendarItemWidth * 0.5, height: calendarItemHeight * 0.1, backgroundColor: displayColorItem, borderRadius: 10 }} />
                                     </View>
@@ -211,9 +157,11 @@ export default class HomeScreen extends BaseComponent {
                             return (displayDate)
                         }}
                     />
+                    <View style={Styles.divider_parent} />
                     <Text style={Styles.log_home_title}>{this.state.selectedDateDisplayed}</Text>
                     {!this.state.isNoRecord &&
-                        (<View style = {{marginBottom: 20}}>
+                        (<View style={{ marginBottom: 20 }}>
+                            <View style={Styles.divider_parent} />
                             <View style={Styles.container_full_width_center_top}>
                                 <View style={Styles.log_home}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -227,6 +175,7 @@ export default class HomeScreen extends BaseComponent {
                                     </View>
                                 </View>
                             </View>
+                            <View style={Styles.divider_child} />
                             <View style={Styles.container_full_width_center_top}>
                                 <View style={Styles.log_home}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -240,11 +189,12 @@ export default class HomeScreen extends BaseComponent {
                                     </View>
                                 </View>
                             </View>
+                            <View style={Styles.divider_parent} />
                         </View>)
                     }
                     {this.state.isNoRecord && (
                         <View style={Styles.container_center_top}>
-                            <Text style = {{marginBottom: 20}}>No record </Text>
+                            <Text style={{ marginBottom: 20 }}>No record </Text>
                         </View>
                     )}
                 </View>

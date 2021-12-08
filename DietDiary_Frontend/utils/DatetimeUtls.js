@@ -2,10 +2,19 @@ const moment = require('moment');
 
 export const yyyy_MM_DD = 'yyyy-MM-DD'
 
+/**
+ * Get now with format yyyy_MM_DD
+ * @returns 
+ */
 export const getDateWithString = () => {
     return moment(new Date()).format(yyyy_MM_DD);
 }
 
+/**
+ * Get Date() with param
+ * @param {*} date (string with fromat, long)
+ * @returns 
+ */
 export const getDate = (date) => {
     return new Date(date);
 }
@@ -27,6 +36,15 @@ export const getDisplayTime = (date) => {
 }
 
 /**
+ * Get display time with format hh:mm
+ * @param {int} hour 
+ * @param {int} min 
+ */
+export const getDisplayTimeByHourMin = (hour, min) => {
+    return ("0" + hour).slice(-2) + ':' + ("0" + min).slice(-2);
+}
+
+/**
  * Get previous date 
  * @param {"yyyy_MM_DD"} date 
  * @returns "yyyy_MM_DD"
@@ -42,4 +60,15 @@ export const getPreviousDate = (date) => {
  */
  export const getNextDate = (date) => {
     return moment(date, yyyy_MM_DD).add(1, 'days').format(yyyy_MM_DD);
+}
+
+/**
+ * Get duration with second, minus if date in past
+ * @param {Date()} date 
+ * @returns 
+ */
+export const getDurationFromNow = (date) => {
+    const today = moment(new Date());
+    const calDate = moment(date)
+    return moment.duration(calDate.diff(today)).seconds();
 }

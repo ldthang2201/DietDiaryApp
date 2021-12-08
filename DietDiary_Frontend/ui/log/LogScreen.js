@@ -1,13 +1,16 @@
-import React, { Component } from "react";
-import { Alert, Image, ScrollView, Text, ToastAndroid, TouchableOpacity, View } from "react-native";
+import React, { Component, createRef } from "react";
+import { Alert, Image, LogBox, ScrollView, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native";
 import BaseComponent from "../../components/BaseComponent";
 import Styles from "../Styles";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { createNewLog, getAllLog, deleteLog, updateLogTime } from "../../databases/Log";
+import { createNewLog, getAllLog, deleteLog, updateLogTime, updateDescription } from "../../databases/Log";
 import realm from "../../databases/database";
 import colors from "../../assets/colors";
-
+import { updateCalendar } from "../../databases/Calendar";
+import BottomSheet from "reanimated-bottom-sheet";
+import Animated from 'react-native-reanimated';
+LogBox.ignoreLogs(['Reanimated 2']);
 const DateTimeUtls = require('../../utils/DatetimeUtls')
 
 const EATING_TYPE = 'eating';
@@ -21,6 +24,8 @@ export default class LogScreen extends BaseComponent {
 
         this._isMounted = false;
 
+        this.bsRef = createRef(null);
+
         var lstAllLogs = [];
         this.listSelectedLog = []
 
@@ -33,6 +38,7 @@ export default class LogScreen extends BaseComponent {
             lstEating: [],
             lstExercise: [],
             lstLogs: [],
+            logDescription: "",
         }
 
         realm.addListener('change', () => {
@@ -85,7 +91,7 @@ export default class LogScreen extends BaseComponent {
 
     // when click cancel button in edit mode
     _onCancel = () => {
-        this.setState({ isDeleteMode: false })
+        this.setState({ isDeleteMode: false, isShowTimePicker: false })
         this.listSelectedLog = []
     }
 
@@ -110,7 +116,8 @@ export default class LogScreen extends BaseComponent {
                         onPress: () => {
                             deleteLog(this.listSelectedLog).then(() => {
                                 this.listSelectedLog = [];
-                                ToastAndroid.show('Delete selected log successfully!', ToastAndroid.LONG)
+                                ToastAndroid.show('Delete selected log successfully!', ToastAndroid.LONG);
+                                updateCalendar(this.state.dateDisplay).then().catch(error => console.log(error));
                             })
                         }
                     }
@@ -121,6 +128,7 @@ export default class LogScreen extends BaseComponent {
             deleteLog(this.listSelectedLog).then(() => {
                 this.listSelectedLog = [];
                 ToastAndroid.show('Delete selected log successfully!', ToastAndroid.LONG)
+                updateCalendar(this.state.dateDisplay).then().catch(error => console.log(error));
             })
         }
     }
@@ -152,13 +160,16 @@ export default class LogScreen extends BaseComponent {
         const now = new Date();
         const timeString = DateTimeUtls.getDisplayTime(now.getTime());
         const newLog = {
-            _id: now.getTime().toString(),
+            primaryKey: now.getTime().toString(),
             date: this.state.dateDisplay,
             time: timeString,
             type: EATING_TYPE,
         }
 
-        new createNewLog(newLog).then(ToastAndroid.show('Add eating log successfully!', ToastAndroid.LONG)).catch((error) => console.log(error))
+        new createNewLog(newLog).then(() => {
+            ToastAndroid.show('Add eating log successfully!', ToastAndroid.LONG);
+            updateCalendar(this.state.dateDisplay).then().catch(error => console.log(error));
+        }).catch((error) => console.log(error))
     }
 
     // when click add button in exercise list
@@ -188,13 +199,16 @@ export default class LogScreen extends BaseComponent {
         const now = new Date();
         const timeString = DateTimeUtls.getDisplayTime(now.getTime());
         const newLog = {
-            _id: now.getTime().toString(),
+            primaryKey: now.getTime().toString(),
             date: this.state.dateDisplay,
             time: timeString,
             type: EXERCISE_TYPE,
         }
 
-        new createNewLog(newLog).then(ToastAndroid.show('Add exercise log successfully!', ToastAndroid.LONG)).catch((error) => console.log(error));
+        new createNewLog(newLog).then(() => {
+            ToastAndroid.show('Add exercise log successfully!', ToastAndroid.LONG);
+            updateCalendar(this.state.dateDisplay).then().catch(error => console.log(error));
+        }).catch((error) => console.log(error));
     }
 
     // when click previous in header time
@@ -250,6 +264,7 @@ export default class LogScreen extends BaseComponent {
     // when click time in log to change time
     _onChangeTimeLog = (even, selectedDate) => {
         if (selectedDate === undefined) {
+            this._onCancel();
             return;
         }
 
@@ -288,6 +303,21 @@ export default class LogScreen extends BaseComponent {
                 })
             }).catch((error) => console.log(error));
         }
+        this._onCancel();
+    }
+
+    _onLogClick = (log) => {
+        this.bsRef.current.snapTo(1);
+        this.setState({
+            selectedLogId: log.primaryKey,
+            logDescription: log.description ? log.description : "",
+        })
+    }
+
+    _onSaveDescription = () => {
+        updateDescription(this.state.selectedLogId, this.state.logDescription).then().catch(error => console.log(error));
+        this.bsRef.current.snapTo(0);
+        this.dismissKeyboard();
     }
 
 
@@ -297,126 +327,168 @@ export default class LogScreen extends BaseComponent {
         const lstExerciseLogs = this.state.lstExercise;
 
         return (
-            <View>
-                <ScrollView>
-                    <View style={Styles.container_space_between_base}>
-                        <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
-                            <TouchableOpacity onPress={this._onPreviousDate}>
-                                <Image
-                                    source={require('../../assets/icons/left-arrow.png')}
-                                    style={Styles.arrow} />
-                            </TouchableOpacity>
-                            <Text style={Styles.log_home_title}>{this.state.dateDisplay}</Text>
-                            <TouchableOpacity onPress={this.state.isNext ? this._onNextDate : null}
-                                activeOpacity={this.state.isNext ? 0.2 : 1}>
-                                <Image
-                                    source={require('../../assets/icons/right-arrow.png')}
-                                    style={this.state.isNext ? Styles.arrow : { margin: 10, width: 20, height: 20, tintColor: colors.disable }}/>
-                            </TouchableOpacity>
-                        </View>
-
-                        {/* EATING LOG */}
-                        <View style={Styles.log_title_container}>
-                            <Text style={Styles.log_title}>Eatings</Text>
-                            <TouchableOpacity onPress={this._onAddEatingClick}>
-                                <Image
-                                    source={require('../../assets/icons/add.png')}
-                                    style={Styles.image_button} />
-                            </TouchableOpacity>
-                        </View>
-                        {lstEatingLogs.map((item) => {
-                            return (
-                                <TouchableOpacity activeOpacity={0.7} onLongPress={() => this.setState({ isDeleteMode: true })} key={item._id}>
-                                    <View style={Styles.history_weight_item_container}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                                            {this.state.isDeleteMode &&
-                                                <BouncyCheckbox
-                                                    fillColor='red'
-                                                    onPress={(isChecked) => {
-                                                        if (isChecked) {
-                                                            this.listSelectedLog.push(item)
-                                                        } else {
-                                                            const index = this.listSelectedLog.indexOf(item)
-                                                            if (index > -1) {
-                                                                this.listSelectedLog.splice(index, 1)
-                                                            }
-                                                        }
-                                                    }} />}
-                                            <Image source={require('../../assets/icons/food.png')} style={Styles.history_weight_item_icon} />
-                                            <Text style={Styles.history_weight_item_value}>Eatings</Text>
-                                        </View>
-                                        <Text onPress={() => {
-                                            this.setState({
-                                                isShowTimePicker: true,
-                                                selectedLogId: item._id,
-                                            });
-                                        }}>{item.time}</Text>
-                                    </View>
+            <>
+                <View>
+                    <ScrollView>
+                        <View style={Styles.container_space_between_base}>
+                            <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
+                                <TouchableOpacity onPress={this._onPreviousDate}>
+                                    <Image
+                                        source={require('../../assets/icons/left-arrow.png')}
+                                        style={Styles.arrow} />
                                 </TouchableOpacity>
-                            );
-                        })}
-                        {lstEatingLogs.length === 0 && <Text style = {{fontSize: 18, margin: 10}}>No record</Text>}
-
-                        {/* EXERCISE LOG */}
-                        <View style={Styles.log_title_container}>
-                            <Text style={Styles.log_title}>Do Exercise</Text>
-                            <TouchableOpacity onPress={this._onAddExerciseClick}>
-                                <Image
-                                    source={require('../../assets/icons/add.png')}
-                                    style={Styles.image_button} />
-                            </TouchableOpacity>
-                        </View>
-                        {lstExerciseLogs.map((item) => {
-                            return (
-                                <TouchableOpacity activeOpacity={0.7} onLongPress={() => this.setState({ isDeleteMode: true })} key={item._id}>
-                                    <View style={Styles.history_weight_item_container}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                                            {this.state.isDeleteMode &&
-                                                <BouncyCheckbox
-                                                    fillColor='red'
-                                                    onPress={(isChecked) => {
-                                                        if (isChecked) {
-                                                            this.listSelectedLog.push(item)
-                                                        } else {
-                                                            const index = this.listSelectedLog.indexOf(item)
-                                                            if (index > -1) {
-                                                                this.listSelectedLog.splice(index, 1)
-                                                            }
-                                                        }
-                                                    }} />}
-                                            <Image source={require('../../assets/icons/exercise.png')} style={Styles.history_weight_item_icon} />
-                                            <Text style={Styles.history_weight_item_value}>Exercise</Text>
-                                        </View>
-                                        <Text onPress={() => {
-                                            this.setState({
-                                                isShowTimePicker: true,
-                                                selectedLogId: item._id,
-                                            });
-                                        }}>{item.time}</Text>
-                                    </View>
+                                <Text style={Styles.log_home_title}>{this.state.dateDisplay}</Text>
+                                <TouchableOpacity onPress={this.state.isNext ? this._onNextDate : null}
+                                    activeOpacity={this.state.isNext ? 0.2 : 1}>
+                                    <Image
+                                        source={require('../../assets/icons/right-arrow.png')}
+                                        style={this.state.isNext ? Styles.arrow : { margin: 10, width: 20, height: 20, tintColor: colors.disable }} />
                                 </TouchableOpacity>
-                            );
-                        })}
-                        {lstExerciseLogs.length === 0 && <Text style = {{fontSize: 18, margin: 10}}>No record</Text>}
-                    </View>
-                </ScrollView>
-                {this.state.isDeleteMode &&
-                    <View style={Styles.delete_container}>
-                        <TouchableOpacity onPress={this._onCancel}>
-                            <Image source={require('../../assets/icons/cancel.png')} style={{ width: 30, height: 30, tintColor: 'black', marginBottom: 20 }} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this._onDeleteLog}>
-                            <Image source={require('../../assets/icons/delete.png')} style={{ width: 30, height: 30, tintColor: 'red' }} />
-                        </TouchableOpacity>
-                    </View>}
-                {this.state.isShowTimePicker &&
-                    <DateTimePicker
-                        value={new Date()}
-                        mode={'time'}
-                        is24Hour={true}
-                        display="default"
-                        onChange={this._onChangeTimeLog} />}
-            </View>
+                            </View>
+
+                            {/* EATING LOG */}
+                            <View style={Styles.log_title_container}>
+                                <Text style={Styles.log_title}>Eatings</Text>
+                                <TouchableOpacity onPress={this._onAddEatingClick}>
+                                    <Image
+                                        source={require('../../assets/icons/add.png')}
+                                        style={Styles.image_button} />
+                                </TouchableOpacity>
+                            </View>
+                            {lstEatingLogs.map((item) => {
+                                return (
+                                    <TouchableOpacity activeOpacity={0.7} onLongPress={() => this.setState({ isDeleteMode: true })} key={item.primaryKey} onPress = {() => this._onLogClick(item)}>
+                                        <View style={Styles.history_weight_item_container}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                                                {this.state.isDeleteMode &&
+                                                    <BouncyCheckbox
+                                                        fillColor='red'
+                                                        onPress={(isChecked) => {
+                                                            if (isChecked) {
+                                                                this.listSelectedLog.push(item)
+                                                            } else {
+                                                                const index = this.listSelectedLog.indexOf(item)
+                                                                if (index > -1) {
+                                                                    this.listSelectedLog.splice(index, 1)
+                                                                }
+                                                            }
+                                                        }} />}
+                                                <Image source={require('../../assets/icons/food.png')} style={Styles.history_weight_item_icon} />
+                                                <Text style={Styles.history_weight_item_value}>Eatings</Text>
+                                            </View>
+                                            <Text style = {{color: 'black'}} onPress={() => {
+                                                this.setState({
+                                                    isShowTimePicker: true,
+                                                    selectedLogId: item.primaryKey,
+                                                });
+                                            }}>{item.time}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                            {lstEatingLogs.length === 0 && <Text style={{ fontSize: 18, margin: 10 }}>No record</Text>}
+
+                            {/* EXERCISE LOG */}
+                            <View style={Styles.log_title_container}>
+                                <Text style={Styles.log_title}>Do Exercise</Text>
+                                <TouchableOpacity onPress={this._onAddExerciseClick}>
+                                    <Image
+                                        source={require('../../assets/icons/add.png')}
+                                        style={Styles.image_button} />
+                                </TouchableOpacity>
+                            </View>
+                            {lstExerciseLogs.map((item) => {
+                                return (
+                                    <TouchableOpacity activeOpacity={0.7} onLongPress={() => this.setState({ isDeleteMode: true })} key={item.primaryKey} onPress = {() => this._onLogClick(item)}>
+                                        <View style={Styles.history_weight_item_container}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                                                {this.state.isDeleteMode &&
+                                                    <BouncyCheckbox
+                                                        fillColor='red'
+                                                        onPress={(isChecked) => {
+                                                            if (isChecked) {
+                                                                this.listSelectedLog.push(item)
+                                                            } else {
+                                                                const index = this.listSelectedLog.indexOf(item)
+                                                                if (index > -1) {
+                                                                    this.listSelectedLog.splice(index, 1)
+                                                                }
+                                                            }
+                                                        }} />}
+                                                <Image source={require('../../assets/icons/exercise.png')} style={Styles.history_weight_item_icon} />
+                                                <Text style={Styles.history_weight_item_value}>Exercise</Text>
+                                            </View>
+                                            <Text style = {{color: 'black'}} onPress={() => {
+                                                this.setState({
+                                                    isShowTimePicker: true,
+                                                    selectedLogId: item.primaryKey,
+                                                });
+                                            }}>{item.time}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                            {lstExerciseLogs.length === 0 && <Text style={{ fontSize: 18, margin: 10 }}>No record</Text>}
+                        </View>
+                    </ScrollView>
+                    {this.state.isDeleteMode &&
+                        <View style={Styles.delete_container}>
+                            <TouchableOpacity onPress={this._onCancel}>
+                                <Image source={require('../../assets/icons/cancel.png')} style={{ width: 30, height: 30, tintColor: 'black', marginBottom: 20 }} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this._onDeleteLog}>
+                                <Image source={require('../../assets/icons/delete.png')} style={{ width: 30, height: 30, tintColor: 'red' }} />
+                            </TouchableOpacity>
+                        </View>}
+                    {this.state.isShowTimePicker &&
+                        <DateTimePicker
+                            value={new Date()}
+                            mode={'time'}
+                            is24Hour={true}
+                            display="default"
+                            onChange={this._onChangeTimeLog}
+                            onTouchCancel={() => this._onCancel()} />}
+
+                </View>
+
+                {/* BOTTOM SHEET */}
+                <BottomSheet
+                    ref={this.bsRef}
+                    snapPoints={[0, 330]}
+                    borderRadius={10}
+                    renderContent={() => {
+                        return (
+                            <View style={Styles.bottom_sheet_content}>
+                                <View style={{ flexDirection: 'row', justifyContent:'space-between' }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Image
+                                            source={require('../../assets/icons/pen.png')}
+                                            style={Styles.bottom_sheet_icon} />
+                                        <Text style={{ color: 'black', fontSize: 17, marginStart: 16 }}>Description</Text>
+                                    </View>
+                                    <TouchableOpacity onPress={()=> this._onSaveDescription()} >
+                                        <Text style = {Styles.secondary_button_text}>Save</Text>
+                                        </TouchableOpacity>
+                                </View>
+                                <TextInput
+                                    multiline={true}
+                                    style={{ color: 'black', fontSize: 17, marginTop: 10, minWidth: 100 }}
+                                    value={this.state.logDescription}
+                                    onChangeText = {(text) => this.setState({logDescription: text})}
+                                />
+                            </View>
+                        )
+                    }}
+                    renderHeader={() => {
+                        return (
+                            <View style={Styles.bottom_sheet_header}>
+                                <View style={{ backgroundColor: colors.divider, width: 40, height: 8, borderRadius: 10 }}></View>
+                            </View>
+                        )
+                    }}
+                    initialSnap={0}
+                />
+            </>
         )
     }
 }

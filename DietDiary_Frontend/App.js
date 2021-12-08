@@ -19,6 +19,10 @@ import PushNotification from 'react-native-push-notification';
 import colors from './assets/colors';
 import Styles from './ui/Styles';
 import ReminderScreen from './ui/notification/ReminderScreen';
+import MenuScreen from './ui/menu/MenuScreen';
+import FoodsScreen from './ui/foods/FoodsScreen';
+import SettingsReminderScreen from './ui/setting/SettingsReminnderScreen';
+import SyncScreen from './ui/account/SyncScreen';
 
 const screenUtils = require('./utils/ScreenNames')
 const Stack = createNativeStackNavigator();
@@ -68,6 +72,18 @@ const App = () => {
           <Stack.Screen name={screenUtils.ReminderScreen}
             component={ReminderScreen}
             options={{ title: 'Reminder' }} />
+          <Stack.Screen name={screenUtils.SettingScreen}
+            component={SettingScreen}
+            options={{ title: 'Settings' }} />
+          <Stack.Screen name={screenUtils.FoodsScreen}
+            component={FoodsScreen}
+            options={{ title: 'List Foods' }} />
+          <Stack.Screen name={screenUtils.SettingsReminderScreen}
+            component={SettingsReminderScreen}
+            options={{ title: 'Settings Reminder' }} />
+            <Stack.Screen name={screenUtils.SyncScreen}
+            component={SyncScreen}
+            options={{ title: 'Data synchronization' }} />
         </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>
@@ -103,11 +119,11 @@ const Home = () => {
           tabBarLabel: 'LOGS',
           title: 'Logs'
         }} />
-      <Tab.Screen name={screenUtils.SettingScreen} component={SettingScreen}
+      <Tab.Screen name={screenUtils.MenuScreen} component={MenuScreen}
         options={{
-          tabBarIcon: ({ color }) => <Image source={require('./assets/icons/settings.png')} style={{ width: 25, height: 25, tintColor: color }} />,
-          tabBarLabel: 'SETTINGS',
-          title: 'Settings'
+          tabBarIcon: ({ color }) => <Image source={require('./assets/icons/threelines.png')} style={{ width: 25, height: 25, tintColor: color }} />,
+          tabBarLabel: 'MENU',
+          title: 'Menu'
         }} />
     </Tab.Navigator>
   );

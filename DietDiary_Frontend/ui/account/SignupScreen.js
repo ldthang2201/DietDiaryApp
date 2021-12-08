@@ -8,6 +8,7 @@ import { validateEmail } from "../../utils/Utls";
 import { CreateAccount, TestApi } from "../../services/NetworkService";
 import AppLoader from "../../components/AppLoader";
 import { createAccount } from "../../databases/Information";
+import { StoredKeysUtls } from "../../utils/StoredKeys";
 const screenUtils = require('../../utils/ScreenNames')
 
 export default class SigninScreen extends BaseComponent {
@@ -38,6 +39,7 @@ export default class SigninScreen extends BaseComponent {
             this.backToPreviousScreen(navigation);
         } else {
             navigation.replace(screenUtils.RegisterInfoScreen);
+            StoredKeysUtls.setBoolean(StoredKeysUtls.key_account_connect, true);
         }
     }
 
@@ -73,7 +75,7 @@ export default class SigninScreen extends BaseComponent {
                                 text: 'OK',
                                 onPress: () => {
                                     let newAccount = {
-                                        _id: result.accounts._id,
+                                        primaryKey: result.accounts._id,
                                         username: username,
                                         email: email,
                                     };

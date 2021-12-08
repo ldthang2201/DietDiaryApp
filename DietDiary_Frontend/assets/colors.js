@@ -5,6 +5,7 @@ module.exports = {
     disable: '#C2DCD0',
     good: '#42CB26',
     notgood: '#E9B96F',
+    bad: '#ff0000',
     selected: '#DEE4CF',
     basepopBackground: "#F4F6F4",
     divider: "#C0C0C0",

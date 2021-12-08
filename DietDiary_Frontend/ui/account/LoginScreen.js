@@ -7,6 +7,7 @@ import Styles from "../Styles";
 import AppLoader from "../../components/AppLoader";
 import { Login } from "../../services/NetworkService";
 import { createAccount } from "../../databases/Information";
+import { StoredKeysUtls } from "../../utils/StoredKeys";
 const screenUtils = require('../../utils/ScreenNames')
 
 export default class LoginScreen extends BaseComponent {
@@ -33,7 +34,8 @@ export default class LoginScreen extends BaseComponent {
             this.backToPreviousScreen(navigation);
             this.backToPreviousScreen(navigation);
         } else {
-            navigation.replace(screenUtils.RegisterInfoScreen);
+            this.finishAllAndOpenScreen(navigation, screenUtils.SyncScreen);
+            StoredKeysUtls.setBoolean(StoredKeysUtls.key_account_connect, true);
         }
     }
 
@@ -59,7 +61,7 @@ export default class LoginScreen extends BaseComponent {
                                 onPress: () => {
                                     const acc = result.accounts;
                                     const newAccount = {
-                                        _id: acc._id,
+                                        primaryKey: acc._id,
                                         username: acc.username,
                                         email: acc.email,
                                     }

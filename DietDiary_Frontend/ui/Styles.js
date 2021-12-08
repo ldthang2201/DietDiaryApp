@@ -43,7 +43,7 @@ export default StyleSheet.create({
 
   container_top_base: {
     flex: 1,
-    backgroundColor: colors.baseBackground,
+    backgroundColor: colors.basepopBackground,
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
@@ -79,7 +79,15 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     color: colors.primaryColor,
     textAlign: 'center',
-    textDecorationLine: 'underline', 
+    textDecorationLine: 'underline',
+    margin: 10,
+  },
+
+  secondary_button_text: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: colors.primaryColor,
+    textAlign: 'center',
     margin: 10,
   },
 
@@ -151,23 +159,21 @@ export default StyleSheet.create({
   },
 
   bottom_tab: {
-    paddingTop:5, 
-    paddingBottom: 5, 
-    marginStart: 10, 
+    paddingTop: 5,
+    paddingBottom: 5,
+    marginStart: 10,
     marginEnd: 10,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10
   },
 
   log_home: {
-    width: screenWidth * 0.9,
-    height: 65,
+    width: screenWidth,
     paddingStart: 16,
     paddingEnd: 16,
+    height: 65,
     backgroundColor: 'white',
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
     justifyContent: 'space-between',
     alignItems: 'center'
   },
@@ -216,6 +222,35 @@ export default StyleSheet.create({
     justifyContent: 'space-between'
   },
 
+  log_item_time: {
+    color: 'black',
+  },
+
+  bottom_sheet_content: {
+    height: 300,
+    padding: 16,
+    paddingTop: 0,
+    backgroundColor: 'white',
+  },
+
+  bottom_sheet_icon: {
+    width: 30,
+    height: 30,
+    tintColor: 'black'
+  },
+
+  bottom_sheet_header: {
+    paddingTop: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderTopColor: colors.divider,
+    borderWidth: 1,
+    borderBottomColor: 'white',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+
   header: {
     borderBottomWidth: 1,
     borderBottomColor: 'gray'
@@ -230,7 +265,7 @@ export default StyleSheet.create({
   history_weight_item_container: {
     width: screenWidth * 0.9,
     height: 55,
-    backgroundColor:  'white',
+    backgroundColor: 'white',
     borderBottomWidth: 1,
     borderColor: 'gray',
     paddingStart: 20,
@@ -249,7 +284,7 @@ export default StyleSheet.create({
   history_weight_item_value: {
     marginStart: 10,
     fontSize: 18,
-    fontWeight: 'bold'
+    color: 'black'
   },
 
   history_weight_item_icon: {
@@ -297,12 +332,141 @@ export default StyleSheet.create({
     height: 1,
     backgroundColor: colors.divider,
     width: '100%',
-    marginStart: 16
+    marginStart: 20
   },
   divider_parent: {
     height: 1,
     backgroundColor: colors.divider,
     width: '100%',
+  },
+
+  divider_menu_item: {
+    height: 1,
+    backgroundColor: colors.divider,
+    width: '100%',
+    marginStart: 52,
+  },
+
+  menu_item_container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 16,
+  },
+
+  menu_item_icon: {
+    width: 20,
+    height: 20,
+  },
+
+  menu_item_title: {
+    marginStart: 16,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+
+  menu_item_sub_title: {
+    marginStart: 16,
+    color: 'black',
+  },
+
+  food_container: {
+    flex: 1,
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    marginBottom: 20,
+    borderRadius: 20,
+  },
+
+  food_image: {
+    width: 100,
+    height: 100,
+    margin: 16,
+    borderRadius: 20
+  },
+
+  food_details_container: {
+    marginTop: 16,
+    marginBottom: 16,
+    marginStart: 10,
+    marginEnd: 10,
+    flex: 1,
+  },
+
+  food_details_title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+
+  food_details_info: {
+    fontSize: 13,
+    color: 'black',
+    maxWidth: '50%',
+    width: '40%',
+    fontWeight: "600"
+  },
+
+  reminder_item_top: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    justifyContent: "space-between",
+    padding: 20,
+    paddingStart: 25,
+    paddingEnd: 25,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    width: "100%",
+  },
+
+  reminder_item_bottom: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    justifyContent: "space-between",
+    padding: 20,
+    paddingStart: 25,
+    paddingEnd: 25,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    width: "100%",
+  },
+
+  reminder_item_middle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    justifyContent: "space-between",
+    padding: 20,
+    paddingStart: 25,
+    paddingEnd: 25,
+    width: "100%",
+  },
+
+  reminder_item_only: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    justifyContent: "space-between",
+    padding: 20,
+    paddingStart: 25,
+    paddingEnd: 25,
+    borderRadius: 20,
+    width: "100%",
+  },
+
+  reminder_time: {
+    color: 'black',
+    fontSize: 30,
+  },
+
+  reminder_title: {
+    color: 'black',
+    fontSize: 20,
+    margin: 16,
+    fontWeight: '600',
   },
 
 })

@@ -24,8 +24,8 @@ export default class SettingScreen extends BaseComponent {
         logOut().then(() => this.updateState()).catch();
     }
 
-    onOpenReminder = () => {
-        this.navigation.navigate(screenUtls.ReminderScreen, { isFromSettings: true });
+    onOpenReminderSettings = () => {
+        this.navigation.navigate(screenUtls.SettingsReminderScreen, { isFromSettings: true });
     }
 
     onOpenAccountConnect = () => {
@@ -36,9 +36,13 @@ export default class SettingScreen extends BaseComponent {
         this.navigation.navigate(screenUtls.RegisterInfoScreen, { isFromSettings: true });
     }
 
+    onOpenSyncScreen = () => {
+        this.navigation.navigate(screenUtls.SyncScreen, { isFromSettings: true });
+    }
+
     _onResume = this.props.navigation.addListener('focus', () => {
         this.updateState();
-      });
+    });
 
 
     updateState = async () => {
@@ -68,7 +72,7 @@ export default class SettingScreen extends BaseComponent {
     render() {
         return (
             <ScrollView>
-                <View style={Styles.container_space_between_left_base}>
+                <View>
                     <Text style={Styles.settings_group_title}>Settings information and application</Text>
                     <View style={Styles.divider_parent} />
                     <View style={Styles.settings_group_container}>
@@ -88,26 +92,47 @@ export default class SettingScreen extends BaseComponent {
                         }
                         {
                             this.state.isLogin &&
-                            <TouchableHighlight onPress={() => this.onLogOut()} underlayColor={colors.button_clicked}>
-                                <View style={Styles.settings_item_container}>
-                                    <Text style={Styles.settings_item_title}>{this.state.email}</Text>
-                                </View>
-                            </TouchableHighlight>
+                            <View>
+                                <TouchableHighlight onPress={() => this.onLogOut()} underlayColor={colors.button_clicked}>
+                                    <View style={Styles.settings_item_container}>
+                                        <Text style={Styles.settings_item_title}>{this.state.email}</Text>
+                                    </View>
+                                </TouchableHighlight>
+                                <View style={Styles.divider_child} />
+                                <TouchableHighlight onPress={() => this.onOpenSyncScreen()} underlayColor={colors.button_clicked}>
+                                    <View style={Styles.settings_item_container}>
+                                        <Text style={Styles.settings_item_title}>Data synchronization</Text>
+                                    </View>
+                                </TouchableHighlight>
+                            </View>
                         }
                     </View>
                     <View style={Styles.divider_parent} />
 
                     <View style={{ ...Styles.divider_parent, marginTop: 40 }} />
+                    <TouchableHighlight onPress={() => this.onOpenReminderSettings()} underlayColor={colors.button_clicked}>
+                        <View style={Styles.settings_item_container}>
+                            <Text style={Styles.settings_item_title}> Settings reminder</Text>
+                        </View>
+                    </TouchableHighlight>
+                    <View style={Styles.divider_parent} />
+                    <View style={{ ...Styles.divider_parent, marginTop: 40 }} />
                     <View style={Styles.settings_group_container}>
-                        <TouchableHighlight onPress={() => this.onOpenReminder()} underlayColor={colors.button_clicked}>
+                        <TouchableHighlight onPress={() => console.log('you clicked')} underlayColor={colors.button_clicked}>
                             <View style={Styles.settings_item_container}>
-                                <Text style={Styles.settings_item_title}> Alarm reminder</Text>
+                                <Text style={Styles.settings_item_title}> Privacy of application</Text>
                             </View>
                         </TouchableHighlight>
                         <View style={Styles.divider_child} />
                         <TouchableHighlight onPress={() => console.log('you clicked')} underlayColor={colors.button_clicked}>
                             <View style={Styles.settings_item_container}>
-                                <Text style={Styles.settings_item_title}> Settings you weight</Text>
+                                <Text style={Styles.settings_item_title}> Contact</Text>
+                            </View>
+                        </TouchableHighlight>
+                        <View style={Styles.divider_child} />
+                        <TouchableHighlight onPress={() => console.log('you clicked')} underlayColor={colors.button_clicked}>
+                            <View style={Styles.settings_item_container}>
+                                <Text style={Styles.settings_item_title}> About us</Text>
                             </View>
                         </TouchableHighlight>
                     </View>
