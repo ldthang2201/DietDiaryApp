@@ -93,6 +93,8 @@ export default class SplashScreen extends BaseComponent {
             exerciseTime: 1,
             weight: -1,
             preWeight : -1,
+            updateAt: new Date('2000-01-01'),
+            createAt: new Date('2000-01-01'),
         };
 
         return newCalendar;

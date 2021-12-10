@@ -93,7 +93,7 @@ export default class SettingScreen extends BaseComponent {
                         {
                             this.state.isLogin &&
                             <View>
-                                <TouchableHighlight onPress={() => this.onLogOut()} underlayColor={colors.button_clicked}>
+                                <TouchableHighlight underlayColor={colors.button_clicked}>
                                     <View style={Styles.settings_item_container}>
                                         <Text style={Styles.settings_item_title}>{this.state.email}</Text>
                                     </View>
@@ -102,6 +102,12 @@ export default class SettingScreen extends BaseComponent {
                                 <TouchableHighlight onPress={() => this.onOpenSyncScreen()} underlayColor={colors.button_clicked}>
                                     <View style={Styles.settings_item_container}>
                                         <Text style={Styles.settings_item_title}>Data synchronization</Text>
+                                    </View>
+                                </TouchableHighlight>
+                                <View style={Styles.divider_child} />
+                                <TouchableHighlight onPress={() => this.onLogOut()} underlayColor={colors.button_clicked}>
+                                    <View style={Styles.settings_item_container}>
+                                        <Text style={Styles.settings_item_title}>Log out</Text>
                                     </View>
                                 </TouchableHighlight>
                             </View>

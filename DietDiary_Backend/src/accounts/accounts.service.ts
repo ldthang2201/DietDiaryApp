@@ -94,7 +94,7 @@ export class AccountsService {
             throw new HttpException({ result: 'Fail', message: 'Account not exist', statusCode: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND);
         };
 
-        return existAccount.listLogs;
+        return existAccount.listLogs.filter(e => e.isDelete == false);
     }
 
     async setLogs(objectId: string, listLogs: [Log]) {

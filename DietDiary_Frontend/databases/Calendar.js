@@ -103,7 +103,7 @@ export const updateCalendar = (date) => new Promise((resolve, reject) => {
             const calendar = realm.objects(allSchemas.CALENDAR).find(current => current.date == date);
             if (calendar != null) {
                 const listAllLogs = realm.objects(allSchemas.LOG);
-                const listLog = listAllLogs.filter(log => log.date == date);
+                const listLog = listAllLogs.filter(log => log.date == date && log.isDelete == false);
                 let eatCount = 0;
                 let exeCount = 0;
                 listLog.forEach(element => {
@@ -113,6 +113,8 @@ export const updateCalendar = (date) => new Promise((resolve, reject) => {
                         exeCount++;
                     }
                 })
+                console.log(eatCount);
+                console.log(exeCount);
 
                 calendar.eatingTime = eatCount;
                 calendar.doExerciseTime = exeCount;
