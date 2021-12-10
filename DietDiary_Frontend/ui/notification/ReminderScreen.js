@@ -245,9 +245,7 @@ export default class ReminderScreen extends Component {
                             display="default"
                             onChange={this._onSelectTimePicker}
                             onTouchCancel={() => this._onCancel()} />}
-                    <PrimaryButton title="Cancel all" onPress={() => {
-                        NotificationService.cancelAllLocalNotifications();
-                    }} />
+                    
                 </View>
             </ScrollView>
         )

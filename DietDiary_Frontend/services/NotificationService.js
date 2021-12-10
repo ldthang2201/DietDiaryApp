@@ -1,6 +1,10 @@
 import PushNotification from 'react-native-push-notification';
-import { calculateDaysFromNow, getDisplayTime, getDisplayTimeByHourMin, getDurationFromNow } from '../utils/DatetimeUtls';
+import { updateCalendar } from '../databases/Calendar';
+import { createNewLog } from '../databases/Log';
+import { calculateDaysFromNow, getDateWithString, getDisplayTime, getDisplayTimeByHourMin, getDurationFromNow } from '../utils/DatetimeUtls';
 
+const EATING_TYPE = 'eating';
+const EXERCISE_TYPE = 'exercise';
 export const NotificationService = {
     eatingChannel: "eating-channel",
     eatingId: "eat",
@@ -16,6 +20,34 @@ export const NotificationService = {
             // (required) Called when a remote is received or opened, or local notification is opened
             onNotification: function (notification) {
                 console.log("NOTIFICATION:", notification);
+                const displayDate = getDateWithString();
+                if (notification.channelId == NotificationService.exerciseId) {
+                    const now = new Date();
+                    const timeString = getDisplayTime(now.getTime());
+                    const newLog = {
+                        primaryKey: now.getTime().toString(),
+                        date: displayDate,
+                        time: timeString,
+                        type: EXERCISE_TYPE,
+                    }
+
+                    createNewLog(newLog).then(() => {
+                        updateCalendar(displayDate).then().catch(error => console.log(error));
+                    }).catch((error) => console.log(error));
+                } else if (notification.channelId == NotificationService.eatingId) {
+                    const now = new Date();
+                    const timeString = getDisplayTime(now.getTime());
+                    const newLog = {
+                        primaryKey: now.getTime().toString(),
+                        date: displayDate,
+                        time: timeString,
+                        type: EATING_TYPE,
+                    }
+
+                    createNewLog(newLog).then(() => {
+                        updateCalendar(displayDate).then().catch(error => console.log(error));
+                    }).catch((error) => console.log(error));
+                }
             },
 
             requestPermissions: Platform.OS === 'ios'
@@ -142,5 +174,5 @@ export const NotificationService = {
             allowWhileIdle: true,
         })
     },
-    
+
 }
